@@ -1,0 +1,18 @@
+# Directories
+archive/
+.vscode/
+.git/
+
+# Files
+data.js
+
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+*.swp
+*.swo
+*~
+.idea/
