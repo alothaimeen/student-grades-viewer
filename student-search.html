@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استعلام عن درجات الطلاب - الفترة 1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .search-box {
+            margin-bottom: 30px;
+        }
+
+        .search-box label {
+            display: block;
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .search-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 15px 20px;
+            font-size: 1.1em;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-btn {
+            padding: 15px 40px;
+            font-size: 1.1em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .search-btn:active {
+            transform: translateY(0);
+        }
+
+        .result-card {
+            display: none;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .result-card.show {
+            display: block;
+        }
+
+        .student-info {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .student-info h2 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .grades-table {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .grades-table h3 {
+            color: #667eea;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 10px;
+            text-align: center;
+            font-size: 1em;
+        }
+
+        th:first-child {
+            border-radius: 10px 0 0 0;
+        }
+
+        th:last-child {
+            border-radius: 0 10px 0 0;
+        }
+
+        td {
+            padding: 12px 10px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            color: #333;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: #f8f9fa;
+        }
+
+        .total-score {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white !important;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .error-message {
+            display: none;
+            background: #ff4757;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .badge-success {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .badge-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .badge-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .search-input-group {
+                flex-direction: column;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+
+            th, td {
+                padding: 8px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 استعلام عن درجات الطلاب</h1>
+            <p>الفترة الدراسية الأولى</p>
+        </div>
+
+        <div class="search-box">
+            <label for="studentId">أدخل رقم الهوية:</label>
+            <div class="search-input-group">
+                <input 
+                    type="text" 
+                    id="studentId" 
+                    placeholder="مثال: 1159456654"
+                    autocomplete="off"
+                >
+                <button class="search-btn" onclick="searchStudent()">بحث</button>
+            </div>
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            ⚠️ لم يتم العثور على طالب بهذا الرقم
+        </div>
+
+        <div class="result-card" id="resultCard">
+            <div class="student-info">
+                <h2>📋 بيانات الطالب</h2>
+                <div class="info-row">
+                    <span class="info-label">الاسم:</span>
+                    <span class="info-value" id="studentName">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">رقم الهوية:</span>
+                    <span class="info-value" id="studentIdDisplay">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">الصف:</span>
+                    <span class="info-value" id="studentClass">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">الرقم التسلسلي:</span>
+                    <span class="info-value" id="studentSerial">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">مجموع الغياب:</span>
+                    <span class="info-value" id="studentAbsence">-</span>
+                </div>
+            </div>
+
+            <div class="grades-table">
+                <h3>📊 الدرجات والتقييمات</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>البند</th>
+                            <th>الدرجة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>الواجبات</td>
+                            <td id="gradeHomework">-</td>
+                        </tr>
+                        <tr>
+                            <td>الأنشطة</td>
+                            <td id="gradeActivities">-</td>
+                        </tr>
+                        <tr>
+                            <td>التطبيقات الصفية</td>
+                            <td id="gradeClasswork">-</td>
+                        </tr>
+                        <tr>
+                            <td>المشاركة</td>
+                            <td id="gradeParticipation">-</td>
+                        </tr>
+                        <tr>
+                            <td>الاختبار التحريري</td>
+                            <td id="gradeWritten">-</td>
+                        </tr>
+                        <tr>
+                            <td>الاختبار الشفوي</td>
+                            <td id="gradeOral">-</td>
+                        </tr>
+                        <tr>
+                            <td class="total-score">المجموع الكلي</td>
+                            <td class="total-score" id="gradeTotal">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // البيانات مضمنة مباشرة في الصفحة
+        const studentsData = [];
+
+        // البحث عند الضغط على Enter
+        document.getElementById('studentId').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchStudent();
+            }
+        });
+
+        function searchStudent() {
+            const studentId = document.getElementById('studentId').value.trim();
+            const errorMessage = document.getElementById('errorMessage');
+            const resultCard = document.getElementById('resultCard');
+
+            // إخفاء الرسائل السابقة
+            errorMessage.classList.remove('show');
+            resultCard.classList.remove('show');
+
+            // التحقق من إدخال رقم الهوية
+            if (!studentId) {
+                alert('يرجى إدخال رقم الهوية');
+                return;
+            }
+
+            // البحث عن الطالب
+            const student = studentsData.find(s => s.الهوية == studentId);
+
+            if (student) {
+                displayStudentData(student);
+                resultCard.classList.add('show');
+            } else {
+                errorMessage.classList.add('show');
+                setTimeout(() => {
+                    errorMessage.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        function displayStudentData(student) {
+            // عرض بيانات الطالب
+            document.getElementById('studentName').textContent = student.الطالب;
+            document.getElementById('studentIdDisplay').textContent = student.الهوية;
+            document.getElementById('studentClass').textContent = 'الصف ' + student.الصف;
+            document.getElementById('studentSerial').textContent = student['الرقم التسلسلي'];
+            
+            // عرض الغياب مع شارة ملونة
+            const absenceElement = document.getElementById('studentAbsence');
+            const absenceCount = student['مجموع الغياب'];
+            let badge = '';
+            if (absenceCount === 0) {
+                badge = '<span class="badge badge-success">' + absenceCount + ' يوم</span>';
+            } else if (absenceCount <= 5) {
+                badge = '<span class="badge badge-warning">' + absenceCount + ' يوم</span>';
+            } else {
+                badge = '<span class="badge badge-danger">' + absenceCount + ' يوم</span>';
+            }
+            absenceElement.innerHTML = badge;
+
+            // عرض الدرجات
+            document.getElementById('gradeHomework').textContent = student.الواجبات;
+            document.getElementById('gradeActivities').textContent = student.أنشطة;
+            document.getElementById('gradeClasswork').textContent = student['تطبيقات صفية'];
+            document.getElementById('gradeParticipation').textContent = student.المشاركة;
+            document.getElementById('gradeWritten').textContent = student['الاختبار التحريري'];
+            document.getElementById('gradeOral').textContent = student.الشفوي;
+            document.getElementById('gradeTotal').textContent = student.المجموع + ' / 60';
+        }
+    </script>
+</body>
+</html>
