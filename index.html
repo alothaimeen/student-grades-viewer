@@ -334,10 +334,6 @@
                     <span class="info-value" id="studentClass">-</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">الرقم التسلسلي:</span>
-                    <span class="info-value" id="studentSerial">-</span>
-                </div>
-                <div class="info-row">
                     <span class="info-label">مجموع الغياب:</span>
                     <span class="info-value" id="studentAbsence">-</span>
                 </div>
@@ -460,7 +456,6 @@
             document.getElementById('studentName').textContent = student.الطالب;
             document.getElementById('studentIdDisplay').textContent = student.الهوية;
             document.getElementById('studentClass').textContent = 'الصف ' + student.الصف;
-            document.getElementById('studentSerial').textContent = student['الرقم التسلسلي'];
             
             // عرض الغياب مع شارة ملونة
             const absenceElement = document.getElementById('studentAbsence');
