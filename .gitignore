@@ -6,6 +6,10 @@ archive/
 # Files
 data.js
 
+# Excel files (keep them local)
+*.xlsx
+*.xls
+
 # System files
 .DS_Store
 Thumbs.db
