@@ -84,7 +84,11 @@ def convert_excel_to_json():
         
         # تحويل التاريخ إلى نص (لتجنب مشاكل التنسيق)
         if 'التاريخ' in df.columns:
-            df['التاريخ'] = pd.to_datetime(df['التاريخ'], errors='coerce').dt.strftime('%Y-%m-%d')
+            # تحويل التاريخ مع معالجة القيم الفارغة والخاطئة
+            df['التاريخ'] = pd.to_datetime(df['التاريخ'], errors='coerce')
+            df['التاريخ'] = df['التاريخ'].apply(
+                lambda x: x.strftime('%Y-%m-%d') if pd.notna(x) else ''
+            )
             print(f"   ✓ تم تنسيق التواريخ")
         
         # إزالة الصفوف الفارغة
