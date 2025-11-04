@@ -570,7 +570,7 @@
 
     <script>
         // الرقم السري (يمكن تغييره)
-        const ADMIN_PASSWORD = '123456';
+        const ADMIN_PASSWORD = '123456789';
 
         // البيانات
         let period1Data = [];
@@ -682,7 +682,7 @@
             const uniqueStudents = new Map();
 
             allStudents.forEach(student => {
-                const normalizedName = normalizeArabicText(student['الاسم'] || student['اسم الطالب'] || '');
+                const normalizedName = normalizeArabicText(student['الطالب'] || student['الاسم'] || student['اسم الطالب'] || '');
                 
                 // التحقق من المطابقة
                 let isMatch = false;
@@ -696,7 +696,7 @@
                 }
 
                 if (isMatch) {
-                    const id = student['رقم الهوية'];
+                    const id = student['الهوية'] || student['رقم الهوية'];
                     if (!uniqueStudents.has(id)) {
                         uniqueStudents.set(id, student);
                     }
@@ -709,7 +709,7 @@
                 document.getElementById('noResults').style.display = 'block';
             } else if (matchedStudents.length === 1) {
                 // إذا كان هناك طالب واحد فقط، اعرض تفاصيله مباشرة
-                showStudentDetails(matchedStudents[0]['رقم الهوية']);
+                showStudentDetails(matchedStudents[0]['الهوية'] || matchedStudents[0]['رقم الهوية']);
             } else {
                 // عرض قائمة الطلاب
                 displayStudentsList(matchedStudents);
@@ -725,8 +725,8 @@
             studentsContainer.innerHTML = '';
 
             students.forEach(student => {
-                const name = student['الاسم'] || student['اسم الطالب'] || 'غير محدد';
-                const id = student['رقم الهوية'];
+                const name = student['الطالب'] || student['الاسم'] || student['اسم الطالب'] || 'غير محدد';
+                const id = student['الهوية'] || student['رقم الهوية'];
                 const className = student['الصف'] || 'غير محدد';
 
                 const studentItem = document.createElement('div');
@@ -748,8 +748,8 @@
         function showStudentDetails(studentId) {
             hideAllSections();
 
-            const student1 = period1Data.find(s => s['رقم الهوية'] === studentId);
-            const student2 = period2Data.find(s => s['رقم الهوية'] === studentId);
+            const student1 = period1Data.find(s => (s['الهوية'] || s['رقم الهوية']) === studentId);
+            const student2 = period2Data.find(s => (s['الهوية'] || s['رقم الهوية']) === studentId);
             const student = student1 || student2;
 
             if (!student) {
@@ -775,11 +775,11 @@
         // عرض البيانات الأساسية
         function displayBasicInfo(student) {
             const container = document.getElementById('studentBasicInfo');
-            const name = student['الاسم'] || student['اسم الطالب'] || 'غير محدد';
-            const id = student['رقم الهوية'];
+            const name = student['الطالب'] || student['الاسم'] || student['اسم الطالب'] || 'غير محدد';
+            const id = student['الهوية'] || student['رقم الهوية'];
             const className = student['الصف'];
             const serialNum = student['الرقم التسلسلي'] || student['م'];
-            const absence = student['الغياب'] || 0;
+            const absence = student['مجموع الغياب'] || student['الغياب'] || 0;
 
             let absenceClass = 'absence-low';
             if (absence > 10) absenceClass = 'absence-high';
@@ -816,13 +816,13 @@
             const table = document.getElementById('gradesTable');
             
             const gradeFields = [
-                { key: 'الواجبات', label: '📝 الواجبات' },
-                { key: 'الأنشطة', label: '🎯 الأنشطة' },
-                { key: 'التطبيقات الصفية', label: '✍️ التطبيقات الصفية' },
-                { key: 'المشاركة', label: '🙋 المشاركة' },
-                { key: 'الاختبار التحريري', label: '📄 الاختبار التحريري' },
-                { key: 'الاختبار الشفوي', label: '🗣️ الاختبار الشفوي' },
-                { key: 'المجموع', label: '📊 المجموع الكلي' }
+                { keys: ['الواجبات'], label: '📝 الواجبات' },
+                { keys: ['أنشطة', 'الأنشطة'], label: '🎯 الأنشطة' },
+                { keys: ['تطبيقات صفية', 'التطبيقات الصفية'], label: '✍️ التطبيقات الصفية' },
+                { keys: ['المشاركة'], label: '🙋 المشاركة' },
+                { keys: ['الاختبار التحريري'], label: '📄 الاختبار التحريري' },
+                { keys: ['الشفوي', 'الاختبار الشفوي'], label: '🗣️ الاختبار الشفوي' },
+                { keys: ['المجموع'], label: '📊 المجموع الكلي' }
             ];
 
             let html = `
@@ -834,9 +834,29 @@
             `;
 
             gradeFields.forEach(field => {
-                const value1 = student1 ? (student1[field.key] || '-') : '-';
-                const value2 = student2 ? (student2[field.key] || '-') : '-';
-                const rowClass = field.key === 'المجموع' ? 'total-row' : '';
+                // البحث عن القيمة باستخدام أي من المفاتيح الممكنة
+                let value1 = '-';
+                let value2 = '-';
+                
+                if (student1) {
+                    for (let key of field.keys) {
+                        if (student1[key] !== undefined && student1[key] !== null) {
+                            value1 = student1[key];
+                            break;
+                        }
+                    }
+                }
+                
+                if (student2) {
+                    for (let key of field.keys) {
+                        if (student2[key] !== undefined && student2[key] !== null) {
+                            value2 = student2[key];
+                            break;
+                        }
+                    }
+                }
+                
+                const rowClass = field.keys.includes('المجموع') ? 'total-row' : '';
                 
                 html += `
                     <tr class="${rowClass}">
@@ -853,7 +873,7 @@
         // عرض الملاحظات السلوكية
         function displayNotes(student) {
             const container = document.getElementById('notesSection');
-            const studentName = normalizeArabicText(student['الاسم'] || student['اسم الطالب'] || '');
+            const studentName = normalizeArabicText(student['الطالب'] || student['الاسم'] || student['اسم الطالب'] || '');
 
             const matchingNotes = notesData.filter(note => {
                 const noteName = normalizeArabicText(note['اسم الطالب'] || '');
