@@ -534,13 +534,19 @@
 
                 // تحميل بيانات الملاحظات
                 try {
-                    const response3 = await fetch('notes.json');
+                    // إضافة cache busting parameter
+                    const timestamp = new Date().getTime();
+                    const response3 = await fetch(`notes.json?v=${timestamp}`);
                     if (response3.ok) {
                         notesData = await response3.json();
-                        console.log('تم تحميل ' + notesData.length + ' ملاحظة');
+                        console.log('✅ تم تحميل ' + notesData.length + ' ملاحظة');
+                        console.log('عينة من الملاحظات:', notesData.slice(0, 2));
+                    } else {
+                        console.error('❌ فشل تحميل notes.json - Status:', response3.status);
                     }
                 } catch (notesError) {
-                    console.log('لم يتم العثور على ملف الملاحظات (notes.json)');
+                    console.error('❌ خطأ في تحميل الملاحظات:', notesError);
+                    console.log('⚠️ لم يتم العثور على ملف الملاحظات (notes.json)');
                 }
             } catch (error) {
                 console.log('استخدام XMLHttpRequest...');
@@ -693,10 +699,21 @@
             // تنظيف اسم الطالب للمطابقة
             const normalizedStudentName = normalizeArabicName(studentName);
             
+            console.log('🔍 البحث عن ملاحظات للطالب:', studentName);
+            console.log('📝 الاسم المنظف:', normalizedStudentName);
+            console.log('📊 عدد الملاحظات الكلي:', notesData.length);
+            
             // فلترة الملاحظات الخاصة بالطالب
-            const studentNotes = notesData.filter(note => 
-                normalizeArabicName(note.اسم_الطالب) === normalizedStudentName
-            );
+            const studentNotes = notesData.filter(note => {
+                const noteNameNormalized = normalizeArabicName(note.اسم_الطالب);
+                const match = noteNameNormalized === normalizedStudentName;
+                if (note.اسم_الطالب.includes('ناصر') || note.اسم_الطالب.includes(studentName.split(' ')[0])) {
+                    console.log('   مقارنة:', note.اسم_الطالب, '==', studentName, '→', match);
+                }
+                return match;
+            });
+
+            console.log('✅ عدد الملاحظات المطابقة:', studentNotes.length);
 
             if (studentNotes.length === 0) {
                 // لا توجد ملاحظات
