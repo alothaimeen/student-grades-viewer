@@ -785,6 +785,19 @@
                 notesContent.innerHTML = notesHTML;
             }
         }
+
+        // قراءة رقم الهوية من URL والبحث التلقائي
+        window.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const studentId = urlParams.get('id');
+            
+            if (studentId) {
+                // تعبئة حقل البحث
+                document.getElementById('studentId').value = studentId;
+                // تنفيذ البحث تلقائياً
+                searchStudent();
+            }
+        });
     </script>
 </body>
 </html>

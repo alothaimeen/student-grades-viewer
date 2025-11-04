@@ -544,27 +544,6 @@
             <div class="no-results" id="noResults">
                 ⚠️ لم يتم العثور على طلاب مطابقين
             </div>
-
-            <!-- تفاصيل الطالب -->
-            <div class="student-details" id="studentDetails">
-                <div class="student-info">
-                    <h2>📋 بيانات الطالب</h2>
-                    <div class="info-row" id="studentBasicInfo"></div>
-                </div>
-
-                <div class="grades-comparison">
-                    <h3>📊 الدرجات - مقارنة بين الفترتين</h3>
-                    <table class="grades-table" id="gradesTable"></table>
-                </div>
-
-                <div class="notes-section" id="notesSection"></div>
-
-                <div class="action-buttons">
-                    <button class="btn-secondary" onclick="backToSearch()">
-                        ← العودة للبحث
-                    </button>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -648,7 +627,6 @@
         function hideAllSections() {
             document.getElementById('resultsList').style.display = 'none';
             document.getElementById('noResults').style.display = 'none';
-            document.getElementById('studentDetails').style.display = 'none';
         }
 
         // تنظيف النص العربي للمقارنة
@@ -746,178 +724,8 @@
 
         // عرض تفاصيل الطالب
         function showStudentDetails(studentId) {
-            hideAllSections();
-
-            const student1 = period1Data.find(s => (s['الهوية'] || s['رقم الهوية']) === studentId);
-            const student2 = period2Data.find(s => (s['الهوية'] || s['رقم الهوية']) === studentId);
-            const student = student1 || student2;
-
-            if (!student) {
-                alert('خطأ: لم يتم العثور على بيانات الطالب');
-                return;
-            }
-
-            // عرض البيانات الأساسية
-            displayBasicInfo(student);
-
-            // عرض الدرجات
-            displayGrades(student1, student2);
-
-            // عرض الملاحظات
-            displayNotes(student);
-
-            document.getElementById('studentDetails').style.display = 'block';
-            
-            // التمرير لأعلى الصفحة
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // عرض البيانات الأساسية
-        function displayBasicInfo(student) {
-            const container = document.getElementById('studentBasicInfo');
-            const name = student['الطالب'] || student['الاسم'] || student['اسم الطالب'] || 'غير محدد';
-            const id = student['الهوية'] || student['رقم الهوية'];
-            const className = student['الصف'];
-            const serialNum = student['الرقم التسلسلي'] || student['م'];
-            const absence = student['مجموع الغياب'] || student['الغياب'] || 0;
-
-            let absenceClass = 'absence-low';
-            if (absence > 10) absenceClass = 'absence-high';
-            else if (absence > 5) absenceClass = 'absence-medium';
-
-            container.innerHTML = `
-                <div class="info-item">
-                    <div class="info-label">الاسم الكامل</div>
-                    <div class="info-value">${name}</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">رقم الهوية</div>
-                    <div class="info-value">${id}</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">الصف الدراسي</div>
-                    <div class="info-value">${className}</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">الرقم التسلسلي</div>
-                    <div class="info-value">${serialNum}</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">مجموع الغياب</div>
-                    <div class="info-value">
-                        <span class="absence-indicator ${absenceClass}">${absence}</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        // عرض الدرجات
-        function displayGrades(student1, student2) {
-            const table = document.getElementById('gradesTable');
-            
-            const gradeFields = [
-                { keys: ['الواجبات'], label: '📝 الواجبات' },
-                { keys: ['أنشطة', 'الأنشطة'], label: '🎯 الأنشطة' },
-                { keys: ['تطبيقات صفية', 'التطبيقات الصفية'], label: '✍️ التطبيقات الصفية' },
-                { keys: ['المشاركة'], label: '🙋 المشاركة' },
-                { keys: ['الاختبار التحريري'], label: '📄 الاختبار التحريري' },
-                { keys: ['الشفوي', 'الاختبار الشفوي'], label: '🗣️ الاختبار الشفوي' },
-                { keys: ['المجموع'], label: '📊 المجموع الكلي' }
-            ];
-
-            let html = `
-                <tr>
-                    <th>البند</th>
-                    <th>الفترة الأولى</th>
-                    <th>الفترة الثانية</th>
-                </tr>
-            `;
-
-            gradeFields.forEach(field => {
-                // البحث عن القيمة باستخدام أي من المفاتيح الممكنة
-                let value1 = '-';
-                let value2 = '-';
-                
-                if (student1) {
-                    for (let key of field.keys) {
-                        if (student1[key] !== undefined && student1[key] !== null) {
-                            value1 = student1[key];
-                            break;
-                        }
-                    }
-                }
-                
-                if (student2) {
-                    for (let key of field.keys) {
-                        if (student2[key] !== undefined && student2[key] !== null) {
-                            value2 = student2[key];
-                            break;
-                        }
-                    }
-                }
-                
-                const rowClass = field.keys.includes('المجموع') ? 'total-row' : '';
-                
-                html += `
-                    <tr class="${rowClass}">
-                        <td class="grade-label">${field.label}</td>
-                        <td class="grade-value">${value1}</td>
-                        <td class="grade-value">${value2}</td>
-                    </tr>
-                `;
-            });
-
-            table.innerHTML = html;
-        }
-
-        // عرض الملاحظات السلوكية
-        function displayNotes(student) {
-            const container = document.getElementById('notesSection');
-            const studentName = normalizeArabicText(student['الطالب'] || student['الاسم'] || student['اسم الطالب'] || '');
-
-            const matchingNotes = notesData.filter(note => {
-                const noteName = normalizeArabicText(note['اسم الطالب'] || '');
-                return noteName === studentName;
-            });
-
-            if (matchingNotes.length === 0) {
-                container.innerHTML = `
-                    <h3>📝 الملاحظات السلوكية</h3>
-                    <div class="no-notes">✅ لا توجد ملاحظات سلوكية مسجلة لهذا الطالب</div>
-                `;
-            } else {
-                let notesHtml = `
-                    <h3>📝 الملاحظات السلوكية (${matchingNotes.length})</h3>
-                    <table class="notes-table">
-                        <tr>
-                            <th>م</th>
-                            <th>المشكلة</th>
-                            <th>التاريخ</th>
-                            <th>الإجراء</th>
-                        </tr>
-                `;
-
-                matchingNotes.forEach(note => {
-                    notesHtml += `
-                        <tr>
-                            <td>${note['م'] || '-'}</td>
-                            <td>${note['المشكلة'] || '-'}</td>
-                            <td>${note['التاريخ'] || '-'}</td>
-                            <td>${note['الإجراء'] || '-'}</td>
-                        </tr>
-                    `;
-                });
-
-                notesHtml += '</table>';
-                container.innerHTML = notesHtml;
-            }
-        }
-
-        // العودة للبحث
-        function backToSearch() {
-            hideAllSections();
-            document.getElementById('studentName').value = '';
-            document.getElementById('studentName').focus();
+            // النقل إلى الصفحة الرئيسية مع رقم الهوية
+            window.location.href = `index.html?id=${studentId}`;
         }
 
         // السماح بالبحث عند الضغط على Enter
