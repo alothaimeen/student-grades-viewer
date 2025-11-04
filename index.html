@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>استعلام عن درجات الطلاب - الفترة الأولى والثانية</title>
+    <!-- Version 2.2 - Updated: 2025-11-04 -->
     <style>
         * {
             margin: 0;
@@ -516,16 +520,19 @@
         
         // محاولة تحميل البيانات
         async function loadData() {
+            // معامل لتجاوز الكاش
+            const cacheBuster = '?v=' + new Date().getTime();
+            
             try {
                 // تحميل بيانات الفترة الأولى
-                const response1 = await fetch('period1.json');
+                const response1 = await fetch('period1.json' + cacheBuster);
                 if (response1.ok) {
                     studentsDataPeriod1 = await response1.json();
                     console.log('تم تحميل ' + studentsDataPeriod1.length + ' طالب من الفترة الأولى');
                 }
                 
                 // تحميل بيانات الفترة الثانية
-                const response2 = await fetch('period2.json');
+                const response2 = await fetch('period2.json' + cacheBuster);
                 if (response2.ok) {
                     studentsDataPeriod2 = await response2.json();
                     console.log('تم تحميل ' + studentsDataPeriod2.length + ' طالب من الفترة الثانية');
@@ -533,7 +540,7 @@
 
                 // تحميل بيانات الملاحظات
                 try {
-                    const response3 = await fetch('notes.json');
+                    const response3 = await fetch('notes.json' + cacheBuster);
                     if (response3.ok) {
                         notesData = await response3.json();
                         console.log('تم تحميل ' + notesData.length + ' ملاحظة');
