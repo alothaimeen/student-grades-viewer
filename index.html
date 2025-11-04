@@ -614,7 +614,8 @@
             }
         }
         
-        loadData();
+        // تحميل البيانات عند بدء الصفحة
+        let dataLoaded = loadData();
 
         // البحث عند الضغط على Enter
         document.getElementById('studentId').addEventListener('keypress', function(e) {
@@ -787,15 +788,21 @@
         }
 
         // قراءة رقم الهوية من URL والبحث التلقائي
-        window.addEventListener('DOMContentLoaded', function() {
+        window.addEventListener('DOMContentLoaded', async function() {
             const urlParams = new URLSearchParams(window.location.search);
             const studentId = urlParams.get('id');
             
             if (studentId) {
+                // الانتظار حتى تحميل البيانات
+                await dataLoaded;
+                
                 // تعبئة حقل البحث
                 document.getElementById('studentId').value = studentId;
-                // تنفيذ البحث تلقائياً
-                searchStudent();
+                
+                // الانتظار قليلاً للتأكد من جاهزية كل شيء
+                setTimeout(() => {
+                    searchStudent();
+                }, 100);
             }
         });
     </script>
