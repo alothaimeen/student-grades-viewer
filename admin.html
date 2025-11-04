@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 صفحة الوكيل والمرشد الطلابي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 1000px;
+            width: 100%;
+            padding: 40px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #f5576c;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .back-btn {
+            padding: 10px 25px;
+            font-size: 0.95em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 20px;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* نمط صفحة تسجيل الدخول */
+        .login-box {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .login-box h2 {
+            color: #f5576c;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .login-box input {
+            width: 100%;
+            max-width: 400px;
+            padding: 15px 20px;
+            font-size: 1.2em;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: 3px;
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: #f5576c;
+            box-shadow: 0 0 0 3px rgba(245, 87, 108, 0.1);
+        }
+
+        .login-btn {
+            padding: 15px 50px;
+            font-size: 1.2em;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .error-login {
+            color: #f5576c;
+            margin-top: 15px;
+            font-weight: bold;
+            display: none;
+        }
+
+        /* نمط صفحة البحث */
+        .search-section {
+            display: none;
+        }
+
+        .search-box {
+            margin-bottom: 30px;
+        }
+
+        .search-box label {
+            display: block;
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .search-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 15px 20px;
+            font-size: 1.1em;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #f5576c;
+            box-shadow: 0 0 0 3px rgba(245, 87, 108, 0.1);
+        }
+
+        .search-btn {
+            padding: 15px 40px;
+            font-size: 1.1em;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .search-btn:active {
+            transform: translateY(0);
+        }
+
+        /* قائمة النتائج */
+        .results-list {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .results-header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .student-item {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-right: 5px solid #f5576c;
+        }
+
+        .student-item:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.3);
+        }
+
+        .student-item h3 {
+            color: #333;
+            font-size: 1.3em;
+            margin-bottom: 5px;
+        }
+
+        .student-item p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-size: 1.1em;
+            display: none;
+        }
+
+        /* بطاقة تفاصيل الطالب */
+        .student-details {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .student-info {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .student-info h2 {
+            color: #f5576c;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #f5576c;
+        }
+
+        .info-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .info-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-right: 4px solid #f5576c;
+        }
+
+        .info-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .grades-comparison {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .grades-comparison h3 {
+            color: #f5576c;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .grades-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .grades-table th {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        .grades-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .grades-table tr:hover {
+            background-color: #fff5f7;
+        }
+
+        .grade-label {
+            font-weight: bold;
+            color: #333;
+            text-align: right;
+            padding-right: 15px;
+        }
+
+        .grade-value {
+            font-size: 1.1em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .total-row {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .total-row td {
+            color: #f5576c;
+        }
+
+        /* الملاحظات السلوكية */
+        .notes-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .notes-section h3 {
+            color: #f5576c;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notes-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .notes-table th {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-size: 1em;
+        }
+
+        .notes-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .notes-table tr:hover {
+            background-color: #fff5f7;
+        }
+
+        .no-notes {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .absence-indicator {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .absence-low {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .absence-medium {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .absence-high {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        /* أزرار التحكم */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .btn-secondary {
+            padding: 12px 30px;
+            font-size: 1em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* استجابة للشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .search-input-group {
+                flex-direction: column;
+            }
+
+            .info-row {
+                grid-template-columns: 1fr;
+            }
+
+            .grades-table, .notes-table {
+                font-size: 0.9em;
+            }
+
+            .grades-table th, .grades-table td,
+            .notes-table th, .notes-table td {
+                padding: 8px 5px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- صفحة تسجيل الدخول -->
+        <div class="login-section" id="loginSection">
+            <button class="back-btn" onclick="window.location.href='index.html'">
+                ← العودة للصفحة الرئيسية
+            </button>
+            <div class="login-box">
+                <h2>🔐 تسجيل الدخول</h2>
+                <p style="color: #666; margin-bottom: 20px;">أدخل الرقم السري للوصول إلى صفحة الوكيل والمرشد الطلابي</p>
+                <input 
+                    type="password" 
+                    id="passwordInput" 
+                    placeholder="الرقم السري"
+                    maxlength="6"
+                >
+                <br>
+                <button class="login-btn" onclick="checkPassword()">دخول</button>
+                <p class="error-login" id="errorLogin">⚠️ الرقم السري غير صحيح</p>
+            </div>
+        </div>
+
+        <!-- صفحة البحث -->
+        <div class="search-section" id="searchSection">
+            <button class="back-btn" onclick="logout()">
+                🔓 تسجيل الخروج
+            </button>
+            <div class="header">
+                <h1>🔐 صفحة الوكيل والمرشد الطلابي</h1>
+                <p>البحث عن الطلاب بالاسم</p>
+            </div>
+
+            <div class="search-box">
+                <label for="studentName">ابحث بالاسم (كامل أو جزئي):</label>
+                <div class="search-input-group">
+                    <input 
+                        type="text" 
+                        id="studentName" 
+                        placeholder="مثال: محمد، أحمد العلي، أحمد... علي"
+                        autocomplete="off"
+                    >
+                    <button class="search-btn" onclick="searchByName()">بحث</button>
+                </div>
+            </div>
+
+            <!-- قائمة النتائج -->
+            <div class="results-list" id="resultsList">
+                <div class="results-header" id="resultsHeader"></div>
+                <div id="studentsContainer"></div>
+            </div>
+
+            <div class="no-results" id="noResults">
+                ⚠️ لم يتم العثور على طلاب مطابقين
+            </div>
+
+            <!-- تفاصيل الطالب -->
+            <div class="student-details" id="studentDetails">
+                <div class="student-info">
+                    <h2>📋 بيانات الطالب</h2>
+                    <div class="info-row" id="studentBasicInfo"></div>
+                </div>
+
+                <div class="grades-comparison">
+                    <h3>📊 الدرجات - مقارنة بين الفترتين</h3>
+                    <table class="grades-table" id="gradesTable"></table>
+                </div>
+
+                <div class="notes-section" id="notesSection"></div>
+
+                <div class="action-buttons">
+                    <button class="btn-secondary" onclick="backToSearch()">
+                        ← العودة للبحث
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // الرقم السري (يمكن تغييره)
+        const ADMIN_PASSWORD = '123456';
+
+        // البيانات
+        let period1Data = [];
+        let period2Data = [];
+        let notesData = [];
+
+        // تحميل البيانات عند تحميل الصفحة
+        async function loadData() {
+            try {
+                const [p1Response, p2Response, notesResponse] = await Promise.all([
+                    fetch('period1.json'),
+                    fetch('period2.json'),
+                    fetch('notes.json')
+                ]);
+
+                period1Data = await p1Response.json();
+                period2Data = await p2Response.json();
+                notesData = await notesResponse.json();
+            } catch (error) {
+                console.error('خطأ في تحميل البيانات:', error);
+                alert('حدث خطأ في تحميل البيانات. يرجى تحديث الصفحة.');
+            }
+        }
+
+        // تحميل البيانات عند بدء الصفحة
+        loadData();
+
+        // التحقق من الرقم السري
+        function checkPassword() {
+            const password = document.getElementById('passwordInput').value;
+            const errorLogin = document.getElementById('errorLogin');
+
+            if (password === ADMIN_PASSWORD) {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('searchSection').style.display = 'block';
+                errorLogin.style.display = 'none';
+                
+                // حفظ حالة تسجيل الدخول
+                sessionStorage.setItem('adminLoggedIn', 'true');
+            } else {
+                errorLogin.style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+            }
+        }
+
+        // السماح بالدخول عند الضغط على Enter
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.getElementById('passwordInput');
+            if (passwordInput) {
+                passwordInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        checkPassword();
+                    }
+                });
+            }
+
+            // التحقق من حالة تسجيل الدخول
+            if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('searchSection').style.display = 'block';
+            }
+        });
+
+        // تسجيل الخروج
+        function logout() {
+            sessionStorage.removeItem('adminLoggedIn');
+            document.getElementById('searchSection').style.display = 'none';
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('studentName').value = '';
+            hideAllSections();
+        }
+
+        // إخفاء جميع الأقسام
+        function hideAllSections() {
+            document.getElementById('resultsList').style.display = 'none';
+            document.getElementById('noResults').style.display = 'none';
+            document.getElementById('studentDetails').style.display = 'none';
+        }
+
+        // تنظيف النص العربي للمقارنة
+        function normalizeArabicText(text) {
+            if (!text) return '';
+            return text
+                .trim()
+                .replace(/\s+/g, ' ')
+                .replace(/[ًٌٍَُِّْ]/g, '') // إزالة التشكيل
+                .replace(/[أإآ]/g, 'ا')
+                .replace(/ة/g, 'ه')
+                .replace(/ى/g, 'ي');
+        }
+
+        // البحث بالاسم
+        function searchByName() {
+            const searchTerm = document.getElementById('studentName').value.trim();
+            
+            if (!searchTerm) {
+                alert('الرجاء إدخال اسم للبحث');
+                return;
+            }
+
+            hideAllSections();
+
+            const normalizedSearch = normalizeArabicText(searchTerm);
+            const searchWords = normalizedSearch.split(' ').filter(word => word.length > 0);
+
+            // البحث في كلا الفترتين
+            const allStudents = [...period1Data, ...period2Data];
+            const uniqueStudents = new Map();
+
+            allStudents.forEach(student => {
+                const normalizedName = normalizeArabicText(student['الاسم'] || student['اسم الطالب'] || '');
+                
+                // التحقق من المطابقة
+                let isMatch = false;
+
+                if (searchWords.length === 1) {
+                    // بحث بكلمة واحدة - تطابق جزئي
+                    isMatch = normalizedName.includes(searchWords[0]);
+                } else {
+                    // بحث بعدة كلمات - جميع الكلمات يجب أن تكون موجودة
+                    isMatch = searchWords.every(word => normalizedName.includes(word));
+                }
+
+                if (isMatch) {
+                    const id = student['رقم الهوية'];
+                    if (!uniqueStudents.has(id)) {
+                        uniqueStudents.set(id, student);
+                    }
+                }
+            });
+
+            const matchedStudents = Array.from(uniqueStudents.values());
+
+            if (matchedStudents.length === 0) {
+                document.getElementById('noResults').style.display = 'block';
+            } else if (matchedStudents.length === 1) {
+                // إذا كان هناك طالب واحد فقط، اعرض تفاصيله مباشرة
+                showStudentDetails(matchedStudents[0]['رقم الهوية']);
+            } else {
+                // عرض قائمة الطلاب
+                displayStudentsList(matchedStudents);
+            }
+        }
+
+        // عرض قائمة الطلاب
+        function displayStudentsList(students) {
+            const resultsHeader = document.getElementById('resultsHeader');
+            const studentsContainer = document.getElementById('studentsContainer');
+
+            resultsHeader.textContent = `تم العثور على ${students.length} طالب`;
+            studentsContainer.innerHTML = '';
+
+            students.forEach(student => {
+                const name = student['الاسم'] || student['اسم الطالب'] || 'غير محدد';
+                const id = student['رقم الهوية'];
+                const className = student['الصف'] || 'غير محدد';
+
+                const studentItem = document.createElement('div');
+                studentItem.className = 'student-item';
+                studentItem.onclick = () => showStudentDetails(id);
+                
+                studentItem.innerHTML = `
+                    <h3>${name}</h3>
+                    <p>📋 رقم الهوية: ${id} | الصف: ${className}</p>
+                `;
+
+                studentsContainer.appendChild(studentItem);
+            });
+
+            document.getElementById('resultsList').style.display = 'block';
+        }
+
+        // عرض تفاصيل الطالب
+        function showStudentDetails(studentId) {
+            hideAllSections();
+
+            const student1 = period1Data.find(s => s['رقم الهوية'] === studentId);
+            const student2 = period2Data.find(s => s['رقم الهوية'] === studentId);
+            const student = student1 || student2;
+
+            if (!student) {
+                alert('خطأ: لم يتم العثور على بيانات الطالب');
+                return;
+            }
+
+            // عرض البيانات الأساسية
+            displayBasicInfo(student);
+
+            // عرض الدرجات
+            displayGrades(student1, student2);
+
+            // عرض الملاحظات
+            displayNotes(student);
+
+            document.getElementById('studentDetails').style.display = 'block';
+            
+            // التمرير لأعلى الصفحة
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // عرض البيانات الأساسية
+        function displayBasicInfo(student) {
+            const container = document.getElementById('studentBasicInfo');
+            const name = student['الاسم'] || student['اسم الطالب'] || 'غير محدد';
+            const id = student['رقم الهوية'];
+            const className = student['الصف'];
+            const serialNum = student['الرقم التسلسلي'] || student['م'];
+            const absence = student['الغياب'] || 0;
+
+            let absenceClass = 'absence-low';
+            if (absence > 10) absenceClass = 'absence-high';
+            else if (absence > 5) absenceClass = 'absence-medium';
+
+            container.innerHTML = `
+                <div class="info-item">
+                    <div class="info-label">الاسم الكامل</div>
+                    <div class="info-value">${name}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">رقم الهوية</div>
+                    <div class="info-value">${id}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">الصف الدراسي</div>
+                    <div class="info-value">${className}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">الرقم التسلسلي</div>
+                    <div class="info-value">${serialNum}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">مجموع الغياب</div>
+                    <div class="info-value">
+                        <span class="absence-indicator ${absenceClass}">${absence}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // عرض الدرجات
+        function displayGrades(student1, student2) {
+            const table = document.getElementById('gradesTable');
+            
+            const gradeFields = [
+                { key: 'الواجبات', label: '📝 الواجبات' },
+                { key: 'الأنشطة', label: '🎯 الأنشطة' },
+                { key: 'التطبيقات الصفية', label: '✍️ التطبيقات الصفية' },
+                { key: 'المشاركة', label: '🙋 المشاركة' },
+                { key: 'الاختبار التحريري', label: '📄 الاختبار التحريري' },
+                { key: 'الاختبار الشفوي', label: '🗣️ الاختبار الشفوي' },
+                { key: 'المجموع', label: '📊 المجموع الكلي' }
+            ];
+
+            let html = `
+                <tr>
+                    <th>البند</th>
+                    <th>الفترة الأولى</th>
+                    <th>الفترة الثانية</th>
+                </tr>
+            `;
+
+            gradeFields.forEach(field => {
+                const value1 = student1 ? (student1[field.key] || '-') : '-';
+                const value2 = student2 ? (student2[field.key] || '-') : '-';
+                const rowClass = field.key === 'المجموع' ? 'total-row' : '';
+                
+                html += `
+                    <tr class="${rowClass}">
+                        <td class="grade-label">${field.label}</td>
+                        <td class="grade-value">${value1}</td>
+                        <td class="grade-value">${value2}</td>
+                    </tr>
+                `;
+            });
+
+            table.innerHTML = html;
+        }
+
+        // عرض الملاحظات السلوكية
+        function displayNotes(student) {
+            const container = document.getElementById('notesSection');
+            const studentName = normalizeArabicText(student['الاسم'] || student['اسم الطالب'] || '');
+
+            const matchingNotes = notesData.filter(note => {
+                const noteName = normalizeArabicText(note['اسم الطالب'] || '');
+                return noteName === studentName;
+            });
+
+            if (matchingNotes.length === 0) {
+                container.innerHTML = `
+                    <h3>📝 الملاحظات السلوكية</h3>
+                    <div class="no-notes">✅ لا توجد ملاحظات سلوكية مسجلة لهذا الطالب</div>
+                `;
+            } else {
+                let notesHtml = `
+                    <h3>📝 الملاحظات السلوكية (${matchingNotes.length})</h3>
+                    <table class="notes-table">
+                        <tr>
+                            <th>م</th>
+                            <th>المشكلة</th>
+                            <th>التاريخ</th>
+                            <th>الإجراء</th>
+                        </tr>
+                `;
+
+                matchingNotes.forEach(note => {
+                    notesHtml += `
+                        <tr>
+                            <td>${note['م'] || '-'}</td>
+                            <td>${note['المشكلة'] || '-'}</td>
+                            <td>${note['التاريخ'] || '-'}</td>
+                            <td>${note['الإجراء'] || '-'}</td>
+                        </tr>
+                    `;
+                });
+
+                notesHtml += '</table>';
+                container.innerHTML = notesHtml;
+            }
+        }
+
+        // العودة للبحث
+        function backToSearch() {
+            hideAllSections();
+            document.getElementById('studentName').value = '';
+            document.getElementById('studentName').focus();
+        }
+
+        // السماح بالبحث عند الضغط على Enter
+        document.addEventListener('DOMContentLoaded', function() {
+            const nameInput = document.getElementById('studentName');
+            if (nameInput) {
+                nameInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        searchByName();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
