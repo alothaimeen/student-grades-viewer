@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>استعلام عن درجات الطلاب - الفترة 1</title>
+    <title>استعلام عن درجات الطلاب - الفترة الأولى والثانية</title>
     <style>
         * {
             margin: 0;
@@ -298,7 +298,7 @@
     <div class="container">
         <div class="header">
             <h1>🎓 استعلام عن درجات الطلاب</h1>
-            <p>الفترة الدراسية الأولى</p>
+            <p>الفترة الدراسية الأولى والثانية</p>
         </div>
 
         <div class="search-box">
@@ -345,37 +345,45 @@
                     <thead>
                         <tr>
                             <th>البند</th>
-                            <th>الدرجة</th>
+                            <th>الفترة الأولى</th>
+                            <th>الفترة الثانية</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>الواجبات</td>
-                            <td id="gradeHomework">-</td>
+                            <td id="gradeHomework1">-</td>
+                            <td id="gradeHomework2">-</td>
                         </tr>
                         <tr>
                             <td>الأنشطة</td>
-                            <td id="gradeActivities">-</td>
+                            <td id="gradeActivities1">-</td>
+                            <td id="gradeActivities2">-</td>
                         </tr>
                         <tr>
                             <td>التطبيقات الصفية</td>
-                            <td id="gradeClasswork">-</td>
+                            <td id="gradeClasswork1">-</td>
+                            <td id="gradeClasswork2">-</td>
                         </tr>
                         <tr>
                             <td>المشاركة</td>
-                            <td id="gradeParticipation">-</td>
+                            <td id="gradeParticipation1">-</td>
+                            <td id="gradeParticipation2">-</td>
                         </tr>
                         <tr>
                             <td>الاختبار التحريري</td>
-                            <td id="gradeWritten">-</td>
+                            <td id="gradeWritten1">-</td>
+                            <td id="gradeWritten2">-</td>
                         </tr>
                         <tr>
                             <td>الاختبار الشفوي</td>
-                            <td id="gradeOral">-</td>
+                            <td id="gradeOral1">-</td>
+                            <td id="gradeOral2">-</td>
                         </tr>
                         <tr>
                             <td class="total-score">المجموع الكلي</td>
-                            <td class="total-score" id="gradeTotal">-</td>
+                            <td class="total-score" id="gradeTotal1">-</td>
+                            <td class="total-score" id="gradeTotal2">-</td>
                         </tr>
                     </tbody>
                 </table>
@@ -383,32 +391,50 @@
         </div>
     </div>
 
-    <!-- تضمين ملف JSON -->
-    <script src="period1.json" type="application/json" id="studentDataScript"></script>
     
     <script>
-        // تحميل البيانات من ملف JSON المضمن أو استخدام XMLHttpRequest
-        let studentsData = [];
+        // تحميل البيانات من ملفات JSON المضمنة أو استخدام XMLHttpRequest
+        let studentsDataPeriod1 = [];
+        let studentsDataPeriod2 = [];
         
         // محاولة تحميل البيانات
         async function loadData() {
             try {
-                const response = await fetch('period1.json');
-                if (!response.ok) throw new Error('Failed to load');
-                studentsData = await response.json();
-                console.log('تم تحميل ' + studentsData.length + ' طالب');
+                // تحميل بيانات الفترة الأولى
+                const response1 = await fetch('period1.json');
+                if (response1.ok) {
+                    studentsDataPeriod1 = await response1.json();
+                    console.log('تم تحميل ' + studentsDataPeriod1.length + ' طالب من الفترة الأولى');
+                }
+                
+                // تحميل بيانات الفترة الثانية
+                const response2 = await fetch('period2.json');
+                if (response2.ok) {
+                    studentsDataPeriod2 = await response2.json();
+                    console.log('تم تحميل ' + studentsDataPeriod2.length + ' طالب من الفترة الثانية');
+                }
             } catch (error) {
                 console.log('استخدام XMLHttpRequest...');
                 try {
-                    const xhr = new XMLHttpRequest();
-                    xhr.open('GET', 'period1.json', false); // synchronous
-                    xhr.send();
-                    if (xhr.status === 200) {
-                        studentsData = JSON.parse(xhr.responseText);
-                        console.log('تم تحميل ' + studentsData.length + ' طالب');
+                    // تحميل الفترة الأولى
+                    const xhr1 = new XMLHttpRequest();
+                    xhr1.open('GET', 'period1.json', false); // synchronous
+                    xhr1.send();
+                    if (xhr1.status === 200) {
+                        studentsDataPeriod1 = JSON.parse(xhr1.responseText);
+                        console.log('تم تحميل ' + studentsDataPeriod1.length + ' طالب من الفترة الأولى');
+                    }
+                    
+                    // تحميل الفترة الثانية
+                    const xhr2 = new XMLHttpRequest();
+                    xhr2.open('GET', 'period2.json', false); // synchronous
+                    xhr2.send();
+                    if (xhr2.status === 200) {
+                        studentsDataPeriod2 = JSON.parse(xhr2.responseText);
+                        console.log('تم تحميل ' + studentsDataPeriod2.length + ' طالب من الفترة الثانية');
                     }
                 } catch (e) {
-                    alert('يرجى فتح الصفحة عبر خادم ويب محلي أو استخدام الصفحة embedded-data.html');
+                    alert('يرجى فتح الصفحة عبر خادم ويب محلي أو التأكد من وجود ملفات البيانات');
                 }
             }
         }
@@ -437,11 +463,12 @@
                 return;
             }
 
-            // البحث عن الطالب
-            const student = studentsData.find(s => s.الهوية == studentId);
+            // البحث عن الطالب في كلا الفترتين
+            const studentPeriod1 = studentsDataPeriod1.find(s => s.الهوية == studentId);
+            const studentPeriod2 = studentsDataPeriod2.find(s => s.الهوية == studentId);
 
-            if (student) {
-                displayStudentData(student);
+            if (studentPeriod1 || studentPeriod2) {
+                displayStudentData(studentPeriod1, studentPeriod2);
                 resultCard.classList.add('show');
             } else {
                 errorMessage.classList.add('show');
@@ -451,13 +478,16 @@
             }
         }
 
-        function displayStudentData(student) {
-            // عرض بيانات الطالب
+        function displayStudentData(studentPeriod1, studentPeriod2) {
+            // استخدام بيانات الفترة الأولى كأساس، أو الثانية إذا لم تكن الأولى متوفرة
+            const student = studentPeriod1 || studentPeriod2;
+            
+            // عرض بيانات الطالب الأساسية
             document.getElementById('studentName').textContent = student.الطالب;
             document.getElementById('studentIdDisplay').textContent = student.الهوية;
             document.getElementById('studentClass').textContent = 'الصف ' + student.الصف;
             
-            // عرض الغياب مع شارة ملونة
+            // عرض الغياب (نأخذ من آخر فترة متوفرة)
             const absenceElement = document.getElementById('studentAbsence');
             const absenceCount = student['مجموع الغياب'];
             let badge = '';
@@ -470,14 +500,45 @@
             }
             absenceElement.innerHTML = badge;
 
-            // عرض الدرجات
-            document.getElementById('gradeHomework').textContent = student.الواجبات;
-            document.getElementById('gradeActivities').textContent = student.أنشطة;
-            document.getElementById('gradeClasswork').textContent = student['تطبيقات صفية'];
-            document.getElementById('gradeParticipation').textContent = student.المشاركة;
-            document.getElementById('gradeWritten').textContent = student['الاختبار التحريري'];
-            document.getElementById('gradeOral').textContent = student.الشفوي;
-            document.getElementById('gradeTotal').textContent = student.المجموع + ' / 60';
+            // عرض درجات الفترة الأولى
+            if (studentPeriod1) {
+                document.getElementById('gradeHomework1').textContent = studentPeriod1.الواجبات;
+                document.getElementById('gradeActivities1').textContent = studentPeriod1.أنشطة;
+                document.getElementById('gradeClasswork1').textContent = studentPeriod1['تطبيقات صفية'];
+                document.getElementById('gradeParticipation1').textContent = studentPeriod1.المشاركة;
+                document.getElementById('gradeWritten1').textContent = studentPeriod1['الاختبار التحريري'];
+                document.getElementById('gradeOral1').textContent = studentPeriod1.الشفوي;
+                document.getElementById('gradeTotal1').textContent = studentPeriod1.المجموع + ' / 60';
+            } else {
+                // إذا لم تكن الفترة الأولى متوفرة
+                document.getElementById('gradeHomework1').textContent = '-';
+                document.getElementById('gradeActivities1').textContent = '-';
+                document.getElementById('gradeClasswork1').textContent = '-';
+                document.getElementById('gradeParticipation1').textContent = '-';
+                document.getElementById('gradeWritten1').textContent = '-';
+                document.getElementById('gradeOral1').textContent = '-';
+                document.getElementById('gradeTotal1').textContent = '-';
+            }
+
+            // عرض درجات الفترة الثانية
+            if (studentPeriod2) {
+                document.getElementById('gradeHomework2').textContent = studentPeriod2.الواجبات;
+                document.getElementById('gradeActivities2').textContent = studentPeriod2.أنشطة;
+                document.getElementById('gradeClasswork2').textContent = studentPeriod2['تطبيقات صفية'];
+                document.getElementById('gradeParticipation2').textContent = studentPeriod2.المشاركة;
+                document.getElementById('gradeWritten2').textContent = studentPeriod2['الاختبار التحريري'];
+                document.getElementById('gradeOral2').textContent = studentPeriod2.الشفوي;
+                document.getElementById('gradeTotal2').textContent = studentPeriod2.المجموع + ' / 60';
+            } else {
+                // إذا لم تكن الفترة الثانية متوفرة
+                document.getElementById('gradeHomework2').textContent = '-';
+                document.getElementById('gradeActivities2').textContent = '-';
+                document.getElementById('gradeClasswork2').textContent = '-';
+                document.getElementById('gradeParticipation2').textContent = '-';
+                document.getElementById('gradeWritten2').textContent = '-';
+                document.getElementById('gradeOral2').textContent = '-';
+                document.getElementById('gradeTotal2').textContent = '-';
+            }
         }
     </script>
 </body>
