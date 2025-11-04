@@ -271,6 +271,101 @@
             color: white;
         }
 
+        /* Behavioral Notes Styles */
+        .notes-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .notes-section h3 {
+            color: #e74c3c;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notes-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .notes-table th {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 12px 10px;
+            text-align: center;
+            font-size: 0.95em;
+        }
+
+        .notes-table th:first-child {
+            border-radius: 10px 0 0 0;
+            width: 50px;
+        }
+
+        .notes-table th:last-child {
+            border-radius: 0 10px 0 0;
+        }
+
+        .notes-table td {
+            padding: 12px 10px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            color: #333;
+        }
+
+        .notes-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .notes-table tr:hover td {
+            background-color: #fff5f5;
+        }
+
+        .note-number {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            font-weight: bold;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .note-problem {
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .note-date {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .note-action {
+            color: #27ae60;
+            font-weight: 500;
+        }
+
+        .no-notes {
+            text-align: center;
+            padding: 30px;
+            color: #27ae60;
+            font-size: 1.1em;
+            background: #d5f4e6;
+            border-radius: 10px;
+        }
+
+        .no-notes::before {
+            content: "✅ ";
+            font-size: 1.5em;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 20px;
@@ -388,6 +483,17 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Behavioral Notes Section -->
+            <div class="notes-section" id="notesSection">
+                <h3>
+                    <span>📋</span>
+                    <span>الملاحظات السلوكية</span>
+                </h3>
+                <div id="notesContent">
+                    <!-- سيتم ملء المحتوى هنا بواسطة JavaScript -->
+                </div>
+            </div>
         </div>
     </div>
 
@@ -396,6 +502,17 @@
         // تحميل البيانات من ملفات JSON المضمنة أو استخدام XMLHttpRequest
         let studentsDataPeriod1 = [];
         let studentsDataPeriod2 = [];
+        let notesData = [];
+        
+        // دالة تنظيف الأسماء العربية للمطابقة
+        function normalizeArabicName(name) {
+            if (!name) return '';
+            
+            return name
+                .trim()                         // إزالة المسافات من الأطراف
+                .replace(/\s+/g, ' ')           // توحيد المسافات المتعددة
+                .replace(/[ًٌٍَُِّْ]/g, '');    // إزالة التشكيل
+        }
         
         // محاولة تحميل البيانات
         async function loadData() {
@@ -412,6 +529,17 @@
                 if (response2.ok) {
                     studentsDataPeriod2 = await response2.json();
                     console.log('تم تحميل ' + studentsDataPeriod2.length + ' طالب من الفترة الثانية');
+                }
+
+                // تحميل بيانات الملاحظات
+                try {
+                    const response3 = await fetch('notes.json');
+                    if (response3.ok) {
+                        notesData = await response3.json();
+                        console.log('تم تحميل ' + notesData.length + ' ملاحظة');
+                    }
+                } catch (notesError) {
+                    console.log('لم يتم العثور على ملف الملاحظات (notes.json)');
                 }
             } catch (error) {
                 console.log('استخدام XMLHttpRequest...');
@@ -432,6 +560,19 @@
                     if (xhr2.status === 200) {
                         studentsDataPeriod2 = JSON.parse(xhr2.responseText);
                         console.log('تم تحميل ' + studentsDataPeriod2.length + ' طالب من الفترة الثانية');
+                    }
+
+                    // تحميل الملاحظات
+                    try {
+                        const xhr3 = new XMLHttpRequest();
+                        xhr3.open('GET', 'notes.json', false);
+                        xhr3.send();
+                        if (xhr3.status === 200) {
+                            notesData = JSON.parse(xhr3.responseText);
+                            console.log('تم تحميل ' + notesData.length + ' ملاحظة');
+                        }
+                    } catch (notesError) {
+                        console.log('لم يتم العثور على ملف الملاحظات (notes.json)');
                     }
                 } catch (e) {
                     alert('يرجى فتح الصفحة عبر خادم ويب محلي أو التأكد من وجود ملفات البيانات');
@@ -538,6 +679,65 @@
                 document.getElementById('gradeWritten2').textContent = '-';
                 document.getElementById('gradeOral2').textContent = '-';
                 document.getElementById('gradeTotal2').textContent = '-';
+            }
+
+            // عرض الملاحظات السلوكية
+            displayStudentNotes(student.الطالب);
+        }
+
+        // دالة عرض الملاحظات السلوكية للطالب
+        function displayStudentNotes(studentName) {
+            const notesContent = document.getElementById('notesContent');
+            
+            // تنظيف اسم الطالب للمطابقة
+            const normalizedStudentName = normalizeArabicName(studentName);
+            
+            // فلترة الملاحظات الخاصة بالطالب
+            const studentNotes = notesData.filter(note => 
+                normalizeArabicName(note.اسم_الطالب) === normalizedStudentName
+            );
+
+            if (studentNotes.length === 0) {
+                // لا توجد ملاحظات
+                notesContent.innerHTML = '<div class="no-notes">لا توجد ملاحظات سلوكية لهذا الطالب</div>';
+            } else {
+                // إنشاء جدول الملاحظات
+                let notesHTML = `
+                    <table class="notes-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>المشكلة</th>
+                                <th>التاريخ</th>
+                                <th>الإجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                // إضافة كل ملاحظة
+                studentNotes.forEach((note, index) => {
+                    const noteNumber = index + 1;
+                    const problem = note.المشكلة || '-';
+                    const date = note.التاريخ || '-';
+                    const action = note.الإجراء || '-';
+
+                    notesHTML += `
+                        <tr>
+                            <td><span class="note-number">${noteNumber}</span></td>
+                            <td class="note-problem">${problem}</td>
+                            <td class="note-date">${date}</td>
+                            <td class="note-action">${action}</td>
+                        </tr>
+                    `;
+                });
+
+                notesHTML += `
+                        </tbody>
+                    </table>
+                `;
+
+                notesContent.innerHTML = notesHTML;
             }
         }
     </script>
