@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path
 import re
+from umm_alqura_calendar import convert_excel_date_to_hijri
 
 def normalize_name(name):
     """
@@ -63,7 +64,7 @@ def convert_excel_to_json():
         # عرض معلومات الملف
         print(f"✅ تم قراءة الملف بنجاح!")
         print(f"📊 عدد الملاحظات: {len(df)}")
-        print(f"📋 الأعمدة الموجودة: {', '.join(df.columns.tolist())}")
+        print(f"📋 الأعمدة الموجودة: {', '.join(str(col) for col in df.columns.tolist())}")
         print()
         
         # تنظيف البيانات
@@ -82,14 +83,14 @@ def convert_excel_to_json():
             df['اسم الطالب'] = df['اسم الطالب'].apply(normalize_name)
             print(f"   ✓ تم تنظيف أسماء الطلاب")
         
-        # تحويل التاريخ إلى نص (لتجنب مشاكل التنسيق)
+        # تحويل التاريخ إلى هجري (تقويم أم القرى) بصيغة عربية جميلة
         if 'التاريخ' in df.columns:
-            # تحويل التاريخ مع معالجة القيم الفارغة والخاطئة
+            # تحويل التاريخ من Excel إلى تاريخ هجري منسق
             df['التاريخ'] = pd.to_datetime(df['التاريخ'], errors='coerce')
             df['التاريخ'] = df['التاريخ'].apply(
-                lambda x: x.strftime('%Y-%m-%d') if pd.notna(x) else ''
+                lambda x: convert_excel_date_to_hijri(x, format_style="full") if pd.notna(x) else ''
             )
-            print(f"   ✓ تم تنسيق التواريخ")
+            print(f"   ✓ تم تحويل التواريخ إلى هجري (تقويم أم القرى)")
         
         # إزالة الصفوف الفارغة
         df = df.dropna(subset=['اسم الطالب', 'المشكلة'], how='all')
