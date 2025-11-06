@@ -826,6 +826,205 @@
                 padding: 8px 5px;
             }
         }
+
+        /* Academic Calendar Styles */
+        .academic-calendar {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 2px solid #dee2e6;
+        }
+
+        .calendar-title {
+            text-align: center;
+            font-size: 1.8em;
+            color: #495057;
+            margin-bottom: 30px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .calendar-title::before,
+        .calendar-title::after {
+            content: '';
+            flex: 1;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #6c757d, transparent);
+            max-width: 100px;
+        }
+
+        .calendar-table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            overflow-x: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .calendar-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .calendar-table thead th {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 15px 12px;
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+        }
+
+        .calendar-table thead th:first-child {
+            border-radius: 10px 0 0 0;
+        }
+
+        .calendar-table thead th:last-child {
+            border-radius: 0 10px 0 0;
+        }
+
+        .calendar-table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .calendar-table tbody tr:hover {
+            background-color: #f8f9fa;
+            transform: scale(1.01);
+        }
+
+        .calendar-table tbody td {
+            padding: 15px 12px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            color: #333;
+            font-size: 1em;
+        }
+
+        .calendar-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .calendar-table tbody tr.past-event {
+            opacity: 0.5;
+            color: #999;
+        }
+
+        .calendar-table tbody tr.past-event td {
+            color: #999;
+        }
+
+        .calendar-table tbody tr.upcoming-event {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);
+            border-right: 5px solid #ffc107;
+            font-weight: bold;
+            animation: highlight 2s ease-in-out infinite;
+        }
+
+        @keyframes highlight {
+            0%, 100% { 
+                box-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
+            }
+            50% { 
+                box-shadow: 0 0 20px rgba(255, 193, 7, 0.6);
+            }
+        }
+
+        .calendar-table tbody tr.upcoming-event td {
+            color: #856404;
+        }
+
+        .calendar-table tbody tr.upcoming-event td:first-child {
+            font-weight: bold;
+            position: relative;
+        }
+
+        .calendar-table tbody tr.upcoming-event td:first-child::before {
+            content: '⭐';
+            position: absolute;
+            right: 5px;
+            font-size: 1.2em;
+            animation: star-twinkle 1.5s ease-in-out infinite;
+        }
+
+        @keyframes star-twinkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .calendar-legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 5px;
+        }
+
+        .legend-color.past {
+            background: #dee2e6;
+            opacity: 0.5;
+        }
+
+        .legend-color.upcoming {
+            background: linear-gradient(135deg, #fff3cd, #ffe8a1);
+            border: 2px solid #ffc107;
+        }
+
+        .days-counter {
+            display: block;
+            font-size: 0.85em;
+            margin-top: 5px;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .upcoming-event .days-counter {
+            color: #856404;
+        }
+
+        .past-event .days-counter {
+            color: #999;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            .calendar-title {
+                font-size: 1.4em;
+            }
+
+            .calendar-table thead th,
+            .calendar-table tbody td {
+                padding: 10px 8px;
+                font-size: 0.9em;
+            }
+
+            .calendar-legend {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -855,6 +1054,98 @@
 
         <div class="error-message" id="errorMessage">
             ⚠️ لم يتم العثور على طالب بهذا الرقم
+        </div>
+
+        <!-- Academic Calendar Section - يظهر قبل الاستعلام -->
+        <div class="academic-calendar" id="academicCalendarBefore">
+            <h3 class="calendar-title">
+                📅 التقويم الدراسي 1447-1448 هـ
+            </h3>
+
+            <div class="calendar-table-container">
+                <table class="calendar-table">
+                    <thead>
+                        <tr>
+                            <th>الحدث</th>
+                            <th>التاريخ الهجري</th>
+                            <th>التاريخ الميلادي</th>
+                        </tr>
+                    </thead>
+                    <tbody id="calendarTableBody">
+                        <tr data-date="2025-06-26">
+                            <td>بداية إجازة نهاية العام الدراسي 1446-1447 نهاية دوام يوم الخميس</td>
+                            <td>01/01/1447 هـ</td>
+                            <td>26/06/2025</td>
+                        </tr>
+                        <tr data-date="2025-08-12">
+                            <td>عودة المشرفين والهيئتين التعليمية والإدارية بالمدارس</td>
+                            <td>18/02/1447 هـ</td>
+                            <td>12/08/2025</td>
+                        </tr>
+                        <tr data-date="2025-08-17">
+                            <td>عودة المعلمين الممارسين للتدريس</td>
+                            <td>23/02/1447 هـ</td>
+                            <td>17/08/2025</td>
+                        </tr>
+                        <tr data-date="2025-08-24">
+                            <td>بداية الدراسة للعام الدراسي 1447-1448</td>
+                            <td>01/03/1447 هـ</td>
+                            <td>24/08/2025</td>
+                        </tr>
+                        <tr data-date="2025-09-23">
+                            <td>إجازة اليوم الوطني</td>
+                            <td>01/04/1447 هـ</td>
+                            <td>23/09/2025</td>
+                        </tr>
+                        <tr data-date="2025-10-12">
+                            <td>إجازة إضافية</td>
+                            <td>20/04/1447 هـ</td>
+                            <td>12/10/2025</td>
+                        </tr>
+                        <tr data-date="2025-11-21">
+                            <td>إجازة الخريف</td>
+                            <td>30/05/1447 هـ</td>
+                            <td>21/11/2025</td>
+                        </tr>
+                        <tr data-date="2025-12-11">
+                            <td>إجازة إضافية</td>
+                            <td>20/06/1447 هـ</td>
+                            <td>11/12/2025</td>
+                        </tr>
+                        <tr data-date="2026-01-09">
+                            <td>إجازة منتصف العام الدراسي</td>
+                            <td>20/07/1447 هـ</td>
+                            <td>09/01/2026</td>
+                        </tr>
+                        <tr data-date="2026-02-22">
+                            <td>إجازة يوم التأسيس</td>
+                            <td>05/09/1447 هـ</td>
+                            <td>22/02/2026</td>
+                        </tr>
+                        <tr data-date="2026-03-06">
+                            <td>إجازة عيد الفطر</td>
+                            <td>17/09/1447 هـ</td>
+                            <td>06/03/2026</td>
+                        </tr>
+                        <tr data-date="2026-05-22">
+                            <td>إجازة عيد الأضحى</td>
+                            <td>05/12/1447 هـ</td>
+                            <td>22/05/2026</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="calendar-legend">
+                <div class="legend-item">
+                    <div class="legend-color past"></div>
+                    <span>أحداث سابقة</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color upcoming"></div>
+                    <span>⭐ الأحداث القادمة</span>
+                </div>
+            </div>
         </div>
 
         <div class="result-card" id="resultCard">
@@ -1176,6 +1467,98 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Academic Calendar Section - يظهر بعد الاستعلام -->
+            <div class="academic-calendar" id="academicCalendarAfter" style="display: none;">
+                <h3 class="calendar-title">
+                    📅 التقويم الدراسي 1447-1448 هـ
+                </h3>
+
+                <div class="calendar-table-container">
+                    <table class="calendar-table">
+                        <thead>
+                            <tr>
+                                <th>الحدث</th>
+                                <th>التاريخ الهجري</th>
+                                <th>التاريخ الميلادي</th>
+                            </tr>
+                        </thead>
+                        <tbody id="calendarTableBodyAfter">
+                            <tr data-date="2025-06-26">
+                                <td>بداية إجازة نهاية العام الدراسي 1446-1447 نهاية دوام يوم الخميس</td>
+                                <td>01/01/1447 هـ</td>
+                                <td>26/06/2025</td>
+                            </tr>
+                            <tr data-date="2025-08-12">
+                                <td>عودة المشرفين والهيئتين التعليمية والإدارية بالمدارس</td>
+                                <td>18/02/1447 هـ</td>
+                                <td>12/08/2025</td>
+                            </tr>
+                            <tr data-date="2025-08-17">
+                                <td>عودة المعلمين الممارسين للتدريس</td>
+                                <td>23/02/1447 هـ</td>
+                                <td>17/08/2025</td>
+                            </tr>
+                            <tr data-date="2025-08-24">
+                                <td>بداية الدراسة للعام الدراسي 1447-1448</td>
+                                <td>01/03/1447 هـ</td>
+                                <td>24/08/2025</td>
+                            </tr>
+                            <tr data-date="2025-09-23">
+                                <td>إجازة اليوم الوطني</td>
+                                <td>01/04/1447 هـ</td>
+                                <td>23/09/2025</td>
+                            </tr>
+                            <tr data-date="2025-10-12">
+                                <td>إجازة إضافية</td>
+                                <td>20/04/1447 هـ</td>
+                                <td>12/10/2025</td>
+                            </tr>
+                            <tr data-date="2025-11-21">
+                                <td>إجازة الخريف</td>
+                                <td>30/05/1447 هـ</td>
+                                <td>21/11/2025</td>
+                            </tr>
+                            <tr data-date="2025-12-11">
+                                <td>إجازة إضافية</td>
+                                <td>20/06/1447 هـ</td>
+                                <td>11/12/2025</td>
+                            </tr>
+                            <tr data-date="2026-01-09">
+                                <td>إجازة منتصف العام الدراسي</td>
+                                <td>20/07/1447 هـ</td>
+                                <td>09/01/2026</td>
+                            </tr>
+                            <tr data-date="2026-02-22">
+                                <td>إجازة يوم التأسيس</td>
+                                <td>05/09/1447 هـ</td>
+                                <td>22/02/2026</td>
+                            </tr>
+                            <tr data-date="2026-03-06">
+                                <td>إجازة عيد الفطر</td>
+                                <td>17/09/1447 هـ</td>
+                                <td>06/03/2026</td>
+                            </tr>
+                            <tr data-date="2026-05-22">
+                                <td>إجازة عيد الأضحى</td>
+                                <td>05/12/1447 هـ</td>
+                                <td>22/05/2026</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="calendar-legend">
+                    <div class="legend-item">
+                        <div class="legend-color past"></div>
+                        <span>أحداث سابقة</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color upcoming"></div>
+                        <span>⭐ الأحداث القادمة</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1271,6 +1654,73 @@
         // تحميل البيانات عند بدء الصفحة
         let dataLoaded = loadData();
 
+        // دالة تحديد الأحداث القادمة والسابقة في التقويم الدراسي
+        function highlightUpcomingEvents() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // تعيين الوقت إلى منتصف الليل للمقارنة الدقيقة
+            
+            // تطبيق على كلا الجدولين
+            const rows1 = document.querySelectorAll('#calendarTableBody tr');
+            const rows2 = document.querySelectorAll('#calendarTableBodyAfter tr');
+            
+            [rows1, rows2].forEach(rows => {
+                rows.forEach(row => {
+                    const dateStr = row.getAttribute('data-date');
+                    if (dateStr) {
+                        const eventDate = new Date(dateStr);
+                        eventDate.setHours(0, 0, 0, 0);
+                        
+                        // حساب الفرق بالأيام
+                        const diffTime = eventDate - today;
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        
+                        // الحصول على الخلية الأولى (الحدث)
+                        const firstCell = row.cells[0];
+                        
+                        // إزالة أي عداد سابق
+                        const existingCounter = firstCell.querySelector('.days-counter');
+                        if (existingCounter) {
+                            existingCounter.remove();
+                        }
+                        
+                        if (eventDate < today) {
+                            // حدث سابق
+                            row.classList.add('past-event');
+                            row.classList.remove('upcoming-event');
+                            
+                            const counter = document.createElement('span');
+                            counter.className = 'days-counter';
+                            counter.textContent = `(مضى عليه ${Math.abs(diffDays)} يوم)`;
+                            firstCell.appendChild(counter);
+                        } else if (diffDays === 0) {
+                            // حدث اليوم
+                            row.classList.add('upcoming-event');
+                            row.classList.remove('past-event');
+                            
+                            const counter = document.createElement('span');
+                            counter.className = 'days-counter';
+                            counter.textContent = `🎉 اليوم!`;
+                            counter.style.color = '#dc3545';
+                            counter.style.fontSize = '1em';
+                            firstCell.appendChild(counter);
+                        } else {
+                            // حدث قادم
+                            row.classList.add('upcoming-event');
+                            row.classList.remove('past-event');
+                            
+                            const counter = document.createElement('span');
+                            counter.className = 'days-counter';
+                            counter.textContent = `⏰ بعد ${diffDays} يوم`;
+                            firstCell.appendChild(counter);
+                        }
+                    }
+                });
+            });
+        }
+
+        // تنفيذ الدالة عند تحميل الصفحة
+        highlightUpcomingEvents();
+
         // البحث عند الضغط على Enter
         document.getElementById('studentId').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -1282,6 +1732,8 @@
             const studentId = document.getElementById('studentId').value.trim();
             const errorMessage = document.getElementById('errorMessage');
             const resultCard = document.getElementById('resultCard');
+            const calendarBefore = document.getElementById('academicCalendarBefore');
+            const calendarAfter = document.getElementById('academicCalendarAfter');
 
             // إخفاء الرسائل السابقة
             errorMessage.classList.remove('show');
@@ -1300,11 +1752,19 @@
             if (studentPeriod1 || studentPeriod2) {
                 displayStudentData(studentPeriod1, studentPeriod2);
                 resultCard.classList.add('show');
+                
+                // إخفاء التقويم الأول وإظهار التقويم الثاني
+                calendarBefore.style.display = 'none';
+                calendarAfter.style.display = 'block';
             } else {
                 errorMessage.classList.add('show');
                 setTimeout(() => {
                     errorMessage.classList.remove('show');
                 }, 3000);
+                
+                // إظهار التقويم الأول في حالة الخطأ
+                calendarBefore.style.display = 'block';
+                calendarAfter.style.display = 'none';
             }
         }
 
