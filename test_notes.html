@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>اختبار نظام الملاحظات</title>
+</head>
+<body>
+    <h1>اختبار نظام الملاحظات</h1>
+    <div id="output"></div>
+    
+    <script>
+        // نسخ دالة التنظيف من index.html
+        function normalizeArabicName(name) {
+            if (!name) return '';
+            
+            return name
+                .trim()                         // إزالة المسافات من الأطراف
+                .replace(/\s+/g, ' ')           // توحيد المسافات المتعددة
+                .replace(/[ًٌٍَُِّْ]/g, '');    // إزالة التشكيل
+        }
+        
+        // تحميل البيانات
+        Promise.all([
+            fetch('period1.json').then(r => r.json()),
+            fetch('notes.json').then(r => r.json())
+        ]).then(([students, notes]) => {
+            const output = document.getElementById('output');
+            
+            // البحث عن الطالب
+            const studentId = 1152684930;
+            const student = students.find(s => s.الهوية == studentId);
+            
+            if (student) {
+                output.innerHTML += `<p><strong>الطالب:</strong> ${student.الطالب}</p>`;
+                output.innerHTML += `<p><strong>الاسم المنظف:</strong> '${normalizeArabicName(student.الطالب)}'</p>`;
+                
+                // البحث عن الملاحظات
+                const studentName = normalizeArabicName(student.الطالب);
+                const studentNotes = notes.filter(note => 
+                    normalizeArabicName(note.اسم_الطالب) === studentName
+                );
+                
+                output.innerHTML += `<p><strong>عدد الملاحظات:</strong> ${studentNotes.length}</p>`;
+                
+                if (studentNotes.length > 0) {
+                    output.innerHTML += '<h3>الملاحظات:</h3><ul>';
+                    studentNotes.slice(0, 3).forEach((note, i) => {
+                        output.innerHTML += `<li>${i+1}. ${note.المشكلة} - ${note.التاريخ} - ${note.الإجراء}</li>`;
+                    });
+                    output.innerHTML += '</ul>';
+                }
+                
+                // فحص مفصل
+                output.innerHTML += '<h3>فحص مفصل للمطابقة:</h3>';
+                output.innerHTML += `<p>اسم الطالب: '${student.الطالب}'</p>`;
+                output.innerHTML += `<p>طول الاسم: ${student.الطالب.length}</p>`;
+                output.innerHTML += `<p>الاسم المنظف: '${studentName}'</p>`;
+                output.innerHTML += `<p>طول المنظف: ${studentName.length}</p>`;
+                
+                // فحص أول 3 ملاحظات لناصر
+                const nasserNotes = notes.filter(n => n.اسم_الطالب.includes('ناصر فيحان'));
+                output.innerHTML += `<h3>ملاحظات ناصر في الملف (${nasserNotes.length}):</h3><ul>`;
+                nasserNotes.slice(0, 3).forEach(note => {
+                    const noteName = normalizeArabicName(note.اسم_الطالب);
+                    const match = noteName === studentName;
+                    output.innerHTML += `<li>`;
+                    output.innerHTML += `اسم: '${note.اسم_الطالب}'<br>`;
+                    output.innerHTML += `منظف: '${noteName}'<br>`;
+                    output.innerHTML += `مطابق: ${match}<br>`;
+                    output.innerHTML += `المشكلة: ${note.المشكلة}`;
+                    output.innerHTML += `</li>`;
+                });
+                output.innerHTML += '</ul>';
+            } else {
+                output.innerHTML = '<p>الطالب غير موجود</p>';
+            }
+        }).catch(error => {
+            document.getElementById('output').innerHTML = '<p style="color: red;">خطأ: ' + error + '</p>';
+            console.error('Error:', error);
+        });
+    </script>
+</body>
+</html>

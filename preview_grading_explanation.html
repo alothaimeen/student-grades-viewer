@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معاينة قسم دليل الدرجات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Grading System Explanation Styles - Inspired by Gamma */
+        .grading-explanation {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 2px solid #dee2e6;
+        }
+
+        .grading-explanation-title {
+            text-align: center;
+            font-size: 1.8em;
+            color: #495057;
+            margin-bottom: 30px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .grading-explanation-title::before,
+        .grading-explanation-title::after {
+            content: '';
+            flex: 1;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #6c757d, transparent);
+            max-width: 100px;
+        }
+
+        .timeline-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .period-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .period-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .period-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 5px;
+        }
+
+        .period-card.completed::before {
+            background: linear-gradient(90deg, #28a745, #20c997);
+        }
+
+        .period-card.ongoing::before {
+            background: linear-gradient(90deg, #007bff, #6610f2);
+        }
+
+        .period-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .period-icon {
+            font-size: 2em;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .period-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #212529;
+        }
+
+        .period-status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-right: auto;
+        }
+
+        .status-completed {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .status-ongoing {
+            background: linear-gradient(135deg, #007bff, #6610f2);
+            color: white;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .period-info {
+            color: #6c757d;
+            font-size: 1em;
+            line-height: 1.8;
+            margin-top: 10px;
+        }
+
+        .period-info strong {
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .opportunity-badge {
+            background: linear-gradient(135deg, #ffc107, #ff9800);
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 0.95em;
+            box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3);
+        }
+
+        .calculation-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .calculation-title {
+            font-size: 1.4em;
+            color: #495057;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+        }
+
+        .calculation-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .calculation-step {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-right: 4px solid #6c757d;
+            padding: 15px 20px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .calculation-step:hover {
+            border-right-color: #007bff;
+            transform: translateX(-5px);
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-left: 10px;
+            font-size: 0.9em;
+        }
+
+        .step-content {
+            display: inline;
+            color: #495057;
+            font-size: 1.05em;
+            line-height: 1.6;
+        }
+
+        .step-formula {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 12px;
+            border: 2px solid #007bff;
+        }
+        
+        .formula-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 8px 0;
+            font-size: 1.15em;
+            flex-wrap: wrap;
+        }
+        
+        .formula-label {
+            color: #495057;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        
+        .formula-equals {
+            color: #007bff;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+        
+        .formula-value {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 8px 20px;
+            border-radius: 8px;
+            color: #0d47a1;
+            font-weight: bold;
+            border: 2px solid #2196f3;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+        }
+        
+        .formula-simple {
+            text-align: center;
+            color: #495057;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin: 5px 0;
+        }
+        
+        .highlight-number {
+            background: #fff3cd;
+            padding: 3px 10px;
+            border-radius: 5px;
+            color: #856404;
+            font-weight: bold;
+            border: 1px solid #ffc107;
+        }
+
+        .final-note {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(23, 162, 184, 0.3);
+        }
+
+        .final-note-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .final-note-content {
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        /* How to Earn Grades Section */
+        .earning-grades-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .earning-grades-title {
+            font-size: 1.4em;
+            color: #495057;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            border-bottom: 3px solid #28a745;
+            padding-bottom: 10px;
+        }
+
+        .grade-category {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-right: 5px solid #28a745;
+            transition: all 0.3s ease;
+        }
+
+        .grade-category:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.2);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .category-icon {
+            font-size: 1.8em;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .category-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #212529;
+        }
+
+        .category-content {
+            color: #495057;
+            line-height: 1.8;
+            margin-right: 45px;
+        }
+
+        .category-content strong {
+            color: #28a745;
+        }
+
+        .sub-item {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 8px 0;
+            border-right: 3px solid #28a745;
+        }
+
+        .exam-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .exam-part {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #17a2b8;
+        }
+
+        .exam-part-title {
+            font-weight: bold;
+            color: #17a2b8;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .exam-part-content {
+            color: #495057;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .exam-split {
+                grid-template-columns: 1fr;
+            }
+            
+            .category-content {
+                margin-right: 0;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .timeline-container {
+                grid-template-columns: 1fr;
+            }
+
+            .grading-explanation {
+                padding: 20px;
+            }
+
+            .grading-explanation-title {
+                font-size: 1.3em;
+            }
+
+            .period-card {
+                padding: 20px;
+            }
+
+            .calculation-step {
+                padding: 12px 15px;
+            }
+
+            .step-formula {
+                font-size: 0.85em;
+            }
+        }
+
+        .preview-header {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .preview-header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .preview-header p {
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="preview-header">
+            <h1>🎨 معاينة قسم دليل فهم نظام الدرجات</h1>
+            <p>شرح بصري واضح لطريقة احتساب الدرجات في نظام نور</p>
+        </div>
+
+        <!-- Grading System Explanation Section -->
+        <div class="grading-explanation">
+            <h3 class="grading-explanation-title">
+                📚 دليل فهم نظام الدرجات
+            </h3>
+
+            <!-- Timeline Section -->
+            <div class="timeline-container">
+                <!-- Period 1 Card -->
+                <div class="period-card completed">
+                    <div class="period-header">
+                        <div class="period-icon">✅</div>
+                        <div>
+                            <div class="period-title">الفترة الأولى</div>
+                            <span class="period-status status-completed">تم الرصد في نور</span>
+                        </div>
+                    </div>
+                    <div class="period-info">
+                        <strong>⏰ الفترة الزمنية:</strong><br>
+                        الأسبوع 1 → الأسبوع 9
+                    </div>
+                    <div class="period-info">
+                        <strong>📊 الحالة:</strong><br>
+                        اكتملت ورُصدت نهائياً في نظام نور
+                    </div>
+                </div>
+
+                <!-- Period 2 Card -->
+                <div class="period-card ongoing">
+                    <div class="period-header">
+                        <div class="period-icon">📝</div>
+                        <div>
+                            <div class="period-title">الفترة الثانية</div>
+                            <span class="period-status status-ongoing">جاري الرصد</span>
+                        </div>
+                    </div>
+                    <div class="period-info">
+                        <strong>⏰ الفترة الزمنية:</strong><br>
+                        الأسبوع 10 → قبل نهاية الفصل بأسبوعين
+                    </div>
+                    <div class="period-info">
+                        <strong>📊 الحالة:</strong><br>
+                        يتم تسجيل الدرجات حالياً
+                    </div>
+                    <div class="period-info" style="background: #fff3cd; padding: 12px; border-radius: 8px; margin-top: 12px; border-right: 4px solid #ffc107;">
+                        <strong style="color: #856404;">💡 ملاحظة مهمة:</strong><br>
+                        <span style="color: #856404;">درجات الفترة الثانية بدأت من الصفر، ويتم إضافة النقاط تدريجياً عبر:<br>
+                        • الواجبات المنزلية<br>
+                        • المشاركات الصفية<br>
+                        • الأنشطة والتطبيقات<br>
+                        • الاختبارات القصيرة</span>
+                    </div>
+                    <div class="opportunity-badge">
+                        💪 مازالت الفرصة متاحة للتحسين!
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calculation Method Section -->
+            <div class="calculation-section">
+                <div class="calculation-title">
+                    🧮 طريقة حساب الدرجة النهائية
+                </div>
+
+                <div class="calculation-steps">
+                    <!-- Step 1 -->
+                    <div class="calculation-step">
+                        <span class="step-number">1</span>
+                        <span class="step-content">
+                            <strong>حساب متوسط أعمال السنة:</strong>
+                            <br>جمع درجات الفترة الأولى والثانية ثم القسمة على 2
+                        </span>
+                        <div class="step-formula">
+                            <div class="formula-simple">
+                                جمع درجات <span class="highlight-number">الفترة الأولى</span> + 
+                                <span class="highlight-number">الفترة الثانية</span> 
+                                ثم القسمة على <span class="highlight-number">2</span>
+                            </div>
+                            <div class="formula-row">
+                                <span class="formula-label">معدل أعمال السنة</span>
+                                <span class="formula-equals">=</span>
+                                <span class="formula-value">المجموع ÷ 2</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="calculation-step">
+                        <span class="step-number">2</span>
+                        <span class="step-content">
+                            <strong>إضافة الاختبار النهائي:</strong>
+                            <br>يتكون من اختبار شفوي (10 درجات) + اختبار تحريري (30 درجة)
+                        </span>
+                        <div class="step-formula">
+                            <div class="formula-simple">
+                                اختبار شفوي <span class="highlight-number">10 درجات</span> + 
+                                اختبار تحريري <span class="highlight-number">30 درجة</span>
+                            </div>
+                            <div class="formula-row">
+                                <span class="formula-label">الاختبار النهائي</span>
+                                <span class="formula-equals">=</span>
+                                <span class="formula-value">40 درجة</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="calculation-step">
+                        <span class="step-number">3</span>
+                        <span class="step-content">
+                            <strong>الدرجة النهائية الكاملة:</strong>
+                            <br>جمع معدل أعمال السنة مع درجة الاختبار النهائي
+                        </span>
+                        <div class="step-formula">
+                            <div class="formula-simple">
+                                <span class="highlight-number">معدل أعمال السنة</span> + 
+                                <span class="highlight-number">الاختبار النهائي (40)</span>
+                            </div>
+                            <div class="formula-row">
+                                <span class="formula-label">الدرجة النهائية</span>
+                                <span class="formula-equals">=</span>
+                                <span class="formula-value">المعدل + 40</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Final Note -->
+                <div class="final-note">
+                    <div class="final-note-title">
+                        🎯 النتيجة النهائية
+                    </div>
+                    <div class="final-note-content">
+                        <strong>المجموع الكلي: 100 درجة</strong>
+                        <br>
+                        ✅ درجة النجاح: 50 درجة فأكثر
+                    </div>
+                </div>
+            </div>
+
+            <!-- How to Earn Grades Section -->
+            <div class="earning-grades-section">
+                <div class="earning-grades-title">
+                    📝 كيف يحصل الطالب على الدرجات؟
+                </div>
+
+                <!-- Participation -->
+                <div class="grade-category">
+                    <div class="category-header">
+                        <div class="category-icon">🙋‍♂️</div>
+                        <div class="category-title">المشاركة الصفية</div>
+                    </div>
+                    <div class="category-content">
+                        <strong>📚 الطريقة:</strong> تحضير الدرس والمشاركة الفعالة في الحصة
+                        <div class="sub-item">
+                            • يتم أخذ درس <strong>كل يوم أو كل يومين</strong>
+                        </div>
+                        <div class="sub-item">
+                            • الطالب الذي يحضر الدرس ويشارك يحصل على الدرجة
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Homework -->
+                <div class="grade-category">
+                    <div class="category-header">
+                        <div class="category-icon">📓</div>
+                        <div class="category-title">الواجبات المنزلية</div>
+                    </div>
+                    <div class="category-content">
+                        <strong>✍️ الطريقة:</strong> الكتابة في دروس الكتابة (Writing Lessons)
+                        <div class="sub-item">
+                            <strong>📋 ملء الجدول في الكتاب:</strong> درجة واحدة (1)
+                        </div>
+                        <div class="sub-item">
+                            <strong>📝 كتابة النص في الدفتر:</strong> درجتان (2)
+                        </div>
+                        <div class="sub-item">
+                            <strong>📚 عدد الوحدات:</strong> 6 وحدات في الكتاب
+                            <br>• 3 وحدات في الفترة الأولى
+                            <br>• 3 وحدات في الفترة الثانية
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exams -->
+                <div class="grade-category">
+                    <div class="category-header">
+                        <div class="category-icon">📝</div>
+                        <div class="category-title">الاختبارات (ضمن أعمال السنة)</div>
+                    </div>
+                    <div class="category-content">
+                        <strong>🎯 ينقسم إلى قسمين:</strong>
+
+                        <div class="exam-split">
+                            <!-- Written Exam -->
+                            <div class="exam-part">
+                                <div class="exam-part-title">
+                                    ✍️ الاختبار التحريري (10 درجات)
+                                </div>
+                                <div class="exam-part-content">
+                                    <strong>المطلوب دراسته:</strong>
+                                    <br>
+                                    • <strong>المفردات (Vocabulary):</strong> من دروس Real Talk
+                                    <br>
+                                    • <strong>القواعد (Grammar):</strong> من دروس Grammar و Form, Meaning and Function
+                                </div>
+                            </div>
+
+                            <!-- Oral Exam -->
+                            <div class="exam-part">
+                                <div class="exam-part-title">
+                                    🗣️ الاختبار الشفوي (10 درجات)
+                                </div>
+                                <div class="exam-part-content">
+                                    <strong>ينقسم إلى قسمين:</strong>
+                                    <br>
+                                    <strong>1. التحدث (Speaking):</strong>
+                                    <br>إجابة أسئلة دروس About You شفوياً باللغة الإنجليزية
+                                    <br><br>
+                                    <strong>2. الاستماع (Listening):</strong>
+                                    <br>الاستماع لنص إنجليزي واختيار الإجابة الصحيحة بناءً على الفهم
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="background: #fff3cd; padding: 12px; border-radius: 8px; margin-top: 15px; border-right: 4px solid #ffc107;">
+                            <strong style="color: #856404;">⚠️ ملاحظة:</strong>
+                            <span style="color: #856404;">
+                                <br>هذه اختبارات أعمال السنة (10 تحريري + 10 شفوي)
+                                <br><strong>أما الاختبار النهائي فهو منفصل:</strong> 30 تحريري + 10 شفوي
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
