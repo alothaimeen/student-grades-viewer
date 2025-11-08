@@ -912,12 +912,12 @@
         }
 
         .calendar-table tbody tr.past-event {
-            opacity: 0.5;
-            color: #999;
+            opacity: 0.7;
+            color: #333;
         }
 
         .calendar-table tbody tr.past-event td {
-            color: #999;
+            color: #333;
         }
 
         .calendar-table tbody tr.upcoming-event {
@@ -1005,8 +1005,57 @@
         }
 
         .past-event .days-counter {
-            color: #999;
-            opacity: 0.7;
+            color: #555;
+            opacity: 0.8;
+        }
+
+        /* Remedial Plan Box Styles */
+        .remedial-plan-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid #2196f3;
+        }
+
+        .remedial-plan-box h3 {
+            color: #1565c0;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .remedial-plan-box p {
+            color: #0d47a1;
+            font-size: 1em;
+            margin-bottom: 15px;
+        }
+
+        .remedial-plan-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1em;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 10px rgba(33, 150, 243, 0.3);
+        }
+
+        .remedial-plan-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(33, 150, 243, 0.5);
+        }
+
+        .remedial-plan-btn:active {
+            transform: translateY(0);
         }
 
         @media (max-width: 768px) {
@@ -1031,7 +1080,7 @@
     <div class="container">
         <div class="header">
             <h1>🎓 استعلام عن درجات الطلاب</h1>
-            <p>الفترة الدراسية الأولى والثانية</p>
+            <p>لطلاب الاستاذ محمد العثيمين الصف الأول 5 و 6 و 7 و 8</p>
             <div style="margin-top: 20px;">
                 <button class="admin-btn" onclick="window.location.href='admin.html'">
                     🔐 خاص بالوكيل والمرشد الطلابي
@@ -1040,16 +1089,25 @@
         </div>
 
         <div class="search-box">
-            <label for="studentId">أدخل رقم الهوية:</label>
+            <label for="studentId">أدخل رقم هوية الطالب للاستعلام عن مستواه في مادة اللغة الانجليزية:</label>
             <div class="search-input-group">
                 <input 
                     type="text" 
                     id="studentId" 
-                    placeholder="مثال: 1159456654"
+                    placeholder="ادخل رقم هوية الطالب"
                     autocomplete="off"
                 >
                 <button class="search-btn" onclick="searchStudent()">بحث</button>
             </div>
+        </div>
+
+        <!-- Remedial Plan Box -->
+        <div class="remedial-plan-box" id="remedialPlanBefore">
+            <h3>📚 الخطة العلاجية</h3>
+            <p>إعداد الأستاذ محمد العثيمين</p>
+            <a href="https://alothaimeen.github.io/plan/index.html" target="_blank" class="remedial-plan-btn">
+                🔗 الانتقال إلى الخطة العلاجية
+            </a>
         </div>
 
         <div class="error-message" id="errorMessage">
@@ -1376,6 +1434,15 @@
                 </div>
             </div>
 
+            <!-- Remedial Plan Box - يظهر بعد الاستعلام -->
+            <div class="remedial-plan-box" id="remedialPlanAfter" style="display: none;">
+                <h3>📚 الخطة العلاجية</h3>
+                <p>إعداد الأستاذ محمد العثيمين</p>
+                <a href="https://alothaimeen.github.io/plan/index.html" target="_blank" class="remedial-plan-btn">
+                    🔗 الانتقال إلى الخطة العلاجية
+                </a>
+            </div>
+
             <!-- Academic Calendar Section - يظهر بعد الاستعلام -->
             <div class="academic-calendar" id="academicCalendarAfter" style="display: none;">
                 <h3 class="calendar-title">
@@ -1392,21 +1459,6 @@
                             </tr>
                         </thead>
                         <tbody id="calendarTableBodyAfter">
-                            <tr data-date="2025-06-26">
-                                <td>بداية إجازة نهاية العام الدراسي 1446-1447 نهاية دوام يوم الخميس</td>
-                                <td>01/01/1447 هـ</td>
-                                <td>26/06/2025</td>
-                            </tr>
-                            <tr data-date="2025-08-12">
-                                <td>عودة المشرفين والهيئتين التعليمية والإدارية بالمدارس</td>
-                                <td>18/02/1447 هـ</td>
-                                <td>12/08/2025</td>
-                            </tr>
-                            <tr data-date="2025-08-17">
-                                <td>عودة المعلمين الممارسين للتدريس</td>
-                                <td>23/02/1447 هـ</td>
-                                <td>17/08/2025</td>
-                            </tr>
                             <tr data-date="2025-08-24">
                                 <td>بداية الدراسة للعام الدراسي 1447-1448</td>
                                 <td>01/03/1447 هـ</td>
@@ -1640,6 +1692,8 @@
             const errorMessage = document.getElementById('errorMessage');
             const resultCard = document.getElementById('resultCard');
             const calendarAfter = document.getElementById('academicCalendarAfter');
+            const remedialPlanBefore = document.getElementById('remedialPlanBefore');
+            const remedialPlanAfter = document.getElementById('remedialPlanAfter');
 
             // إخفاء الرسائل السابقة
             errorMessage.classList.remove('show');
@@ -1659,7 +1713,9 @@
                 displayStudentData(studentPeriod1, studentPeriod2);
                 resultCard.classList.add('show');
                 
-                // إظهار التقويم بعد عرض بيانات الطالب
+                // إخفاء الصندوق الأول وإظهار الصندوق الثاني مع التقويم
+                remedialPlanBefore.style.display = 'none';
+                remedialPlanAfter.style.display = 'block';
                 calendarAfter.style.display = 'block';
             } else {
                 errorMessage.classList.add('show');
@@ -1667,7 +1723,9 @@
                     errorMessage.classList.remove('show');
                 }, 3000);
                 
-                // إخفاء التقويم في حالة الخطأ
+                // إظهار الصندوق الأول وإخفاء الصندوق الثاني والتقويم في حالة الخطأ
+                remedialPlanBefore.style.display = 'block';
+                remedialPlanAfter.style.display = 'none';
                 calendarAfter.style.display = 'none';
             }
         }
