@@ -10,6 +10,28 @@ Write-Host "=" -NoNewline -ForegroundColor Cyan
 Write-Host ("=" * 68) -ForegroundColor Cyan
 Write-Host ""
 
+# =====================================================
+# التحقق من تثبيت المكتبات المطلوبة
+# =====================================================
+Write-Host "🔍 التحقق من المكتبات المطلوبة..." -ForegroundColor Cyan
+$checkLib = python -c "import hijridate" 2>&1
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "⚠️  المكتبة hijridate غير مثبتة، جاري التثبيت..." -ForegroundColor Yellow
+    pip install hijridate
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "❌ فشل تثبيت المكتبة المطلوبة!" -ForegroundColor Red
+        Write-Host "💡 قم بتشغيل: pip install -r requirements.txt" -ForegroundColor Yellow
+        Read-Host "اضغط Enter للخروج"
+        exit 1
+    }
+    Write-Host "✅ تم تثبيت المكتبة بنجاح" -ForegroundColor Green
+}
+Write-Host "✅ جميع المكتبات متوفرة" -ForegroundColor Green
+Write-Host ""
+Write-Host "=" -NoNewline -ForegroundColor Cyan
+Write-Host ("=" * 68) -ForegroundColor Cyan
+Write-Host ""
+
 $hasChanges = $false
 $successCount = 0
 $failCount = 0
@@ -139,6 +161,9 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "   • الفترة الأولى (period1.json)" -ForegroundColor White
     Write-Host "   • الفترة الثانية (period2.json)" -ForegroundColor White
     Write-Host "   • الملاحظات السلوكية (notes.json)" -ForegroundColor White
+    Write-Host ""
+    Write-Host "📅 ملاحظة: التواريخ في الملاحظات تم تحويلها تلقائياً للهجري" -ForegroundColor Magenta
+    Write-Host "   الصيغة: اليوم, التاريخ الشهر, السنة" -ForegroundColor Gray
     Write-Host ""
     Write-Host "🌐 الموقع سيتحدث خلال دقيقتين!" -ForegroundColor Yellow
     Write-Host "🔗 https://alothaimeen.github.io/student-grades-viewer/" -ForegroundColor Cyan
