@@ -119,13 +119,28 @@ if ($failCount -gt 0) {
 }
 
 # =====================================================
+# الخطوة 3.5: حفظ تاريخ التحديث
+# =====================================================
+Write-Host "📅 حفظ تاريخ التحديث..." -ForegroundColor Cyan
+python save_update_date.py
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "✅ تم حفظ تاريخ التحديث" -ForegroundColor Green
+} else {
+    Write-Host "⚠️  تحذير: فشل حفظ تاريخ التحديث" -ForegroundColor Yellow
+}
+Write-Host ""
+Write-Host "=" -NoNewline -ForegroundColor Cyan
+Write-Host ("=" * 68) -ForegroundColor Cyan
+Write-Host ""
+
+# =====================================================
 # الخطوة 4: رفع التحديثات إلى GitHub
 # =====================================================
 Write-Host "📤 [4/4] رفع التحديثات إلى GitHub..." -ForegroundColor Cyan
 Write-Host ""
 
 # إضافة جميع الملفات المحدثة
-git add period1.json period2.json notes.json
+git add period1.json period2.json notes.json last_update.json
 
 # التحقق من وجود تغييرات
 $status = git status --porcelain

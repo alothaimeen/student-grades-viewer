@@ -158,6 +158,32 @@
             display: block;
         }
 
+        .last-update-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .last-update-info p {
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+
+        .last-update-info .update-date {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-top: 8px;
+        }
+
+        .last-update-info .update-icon {
+            font-size: 1.2em;
+            margin-left: 5px;
+        }
+
         .student-info {
             background: white;
             border-radius: 10px;
@@ -1105,7 +1131,7 @@
         <div class="remedial-plan-box" id="remedialPlanBefore">
             <h3>📚 الخطة العلاجية</h3>
             <p>إعداد الأستاذ محمد العثيمين</p>
-            <a href="https://alothaimeen.github.io/plan/index.html" target="_blank" class="remedial-plan-btn">
+            <a href="https://alothaimeen.github.io/plan/index.html" class="remedial-plan-btn">
                 🔗 الانتقال إلى الخطة العلاجية
             </a>
         </div>
@@ -1115,6 +1141,12 @@
         </div>
 
         <div class="result-card" id="resultCard">
+            <!-- عرض تاريخ آخر تحديث -->
+            <div class="last-update-info" id="lastUpdateInfo" style="display: none;">
+                <p><span class="update-icon">🔄</span> آخر تحديث للدرجات</p>
+                <p class="update-date" id="lastUpdateDate">جاري التحميل...</p>
+            </div>
+
             <div class="student-info">
                 <h2>📋 بيانات الطالب</h2>
                 <div class="info-row">
@@ -1438,7 +1470,7 @@
             <div class="remedial-plan-box" id="remedialPlanAfter" style="display: none;">
                 <h3>📚 الخطة العلاجية</h3>
                 <p>إعداد الأستاذ محمد العثيمين</p>
-                <a href="https://alothaimeen.github.io/plan/index.html" target="_blank" class="remedial-plan-btn">
+                <a href="https://alothaimeen.github.io/plan/index.html" class="remedial-plan-btn">
                     🔗 الانتقال إلى الخطة العلاجية
                 </a>
             </div>
@@ -1614,6 +1646,23 @@
         // تحميل البيانات عند بدء الصفحة
         let dataLoaded = loadData();
 
+        // تحميل تاريخ آخر تحديث
+        let lastUpdateData = null;
+        async function loadLastUpdate() {
+            try {
+                const response = await fetch('last_update.json?v=' + new Date().getTime());
+                if (response.ok) {
+                    lastUpdateData = await response.json();
+                    console.log('✅ تم تحميل تاريخ آخر تحديث');
+                } else {
+                    console.log('⚠️ لم يتم العثور على ملف last_update.json');
+                }
+            } catch (error) {
+                console.log('⚠️ لم يتم العثور على تاريخ التحديث');
+            }
+        }
+        loadLastUpdate();
+
         // دالة تحديد الأحداث القادمة والسابقة في التقويم الدراسي
         function highlightUpcomingEvents() {
             const today = new Date();
@@ -1622,8 +1671,7 @@
             // تطبيق على الجدول الوحيد (بعد الاستعلام)
             const rows = document.querySelectorAll('#calendarTableBodyAfter tr');
             
-            [rows].forEach(rows => {
-                rows.forEach(row => {
+            rows.forEach(row => {
                     const dateStr = row.getAttribute('data-date');
                     if (dateStr) {
                         const eventDate = new Date(dateStr);
@@ -1673,7 +1721,6 @@
                             firstCell.appendChild(counter);
                         }
                     }
-                });
             });
         }
 
@@ -1713,6 +1760,9 @@
                 displayStudentData(studentPeriod1, studentPeriod2);
                 resultCard.classList.add('show');
                 
+                // عرض تاريخ آخر تحديث
+                displayLastUpdate();
+                
                 // إخفاء الصندوق الأول وإظهار الصندوق الثاني مع التقويم
                 remedialPlanBefore.style.display = 'none';
                 remedialPlanAfter.style.display = 'block';
@@ -1727,6 +1777,30 @@
                 remedialPlanBefore.style.display = 'block';
                 remedialPlanAfter.style.display = 'none';
                 calendarAfter.style.display = 'none';
+            }
+        }
+
+        function displayLastUpdate() {
+            const lastUpdateInfo = document.getElementById('lastUpdateInfo');
+            const lastUpdateDate = document.getElementById('lastUpdateDate');
+            
+            if (lastUpdateData && lastUpdateData.last_update) {
+                const update = lastUpdateData.last_update;
+                
+                // عرض التاريخ الهجري والميلادي
+                let dateText = '';
+                if (update.hijri && update.hijri.display) {
+                    dateText = `🌙 ${update.hijri.display}`;
+                }
+                if (update.gregorian && update.gregorian.display) {
+                    if (dateText) dateText += '<br>';
+                    dateText += `📅 ${update.gregorian.display}`;
+                }
+                
+                if (dateText) {
+                    lastUpdateDate.innerHTML = dateText;
+                    lastUpdateInfo.style.display = 'block';
+                }
             }
         }
 
