@@ -3,6 +3,10 @@
 # =====================================================
 # يقوم بتحويل جميع الملفات ورفعها إلى GitHub دفعة واحدة
 
+# الانتقال إلى مجلد السكريبت تلقائياً
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+Set-Location $scriptDir
+
 Write-Host "=" -NoNewline -ForegroundColor Cyan
 Write-Host ("=" * 68) -ForegroundColor Cyan
 Write-Host "🔄 التحديث الشامل - تحديث جميع البيانات" -ForegroundColor Yellow
